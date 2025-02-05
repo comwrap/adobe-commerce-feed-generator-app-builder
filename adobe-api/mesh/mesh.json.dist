@@ -1,0 +1,34 @@
+{
+  "meshConfig": {
+    "sources": [
+      {
+        "name": "REST",
+        "handler": {
+          "openapi": {
+            "source": "MAGENTO-URL/rest/schema?services=storeStoreRepositoryV1,storeGroupRepositoryV1,storeWebsiteRepositoryV1",
+            "schemaHeaders": {
+              "Authorization": "Bearer MAGENTO-TOKEN"
+            },
+            "operationHeaders": {
+              "Authorization": "Bearer {context.headers['m-ac-rest-api-token']}",
+              "Content-Type": "application/json"
+            },
+            "includeHttpDetails": true
+          }
+        }
+      },
+      {
+        "name": "GraphQL",
+        "handler": {
+          "graphql": {
+            "endpoint": "MAGENTO-URL/graphql",
+            "operationHeaders": {
+              "store": "{context.headers['m-ac-gql-store-code']}",
+              "Content-Type": "application/json"
+            }
+          }
+        }
+      }
+    ]
+  }
+}

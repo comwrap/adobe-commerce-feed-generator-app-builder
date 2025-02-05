@@ -1,0 +1,96 @@
+const { Core, Events } = require('@adobe/aio-sdk')
+const fetch = require('node-fetch')
+const requestLib = require('request')
+const { errorResponse, getBearerToken, stringParameters, checkMissingRequestInputs } = require('./../utils.js')
+const { queryProducts } = require('./../acGqlLib/products.js')
+const stateLib = require('@adobe/aio-lib-state')
+const filesLib = require('@adobe/aio-lib-files')
+// main function that will be executed by Adobe I/O Runtime
+async function main (params) {
+  // create a Logger
+  const logger = Core.Logger('main', { level: params.LOG_LEVEL || 'info' })
+
+  try {
+
+    // check for missing request input parameters and headers
+    const requiredParams = ['journalling_url', 'apiKey']
+    const requiredHeaders = ['x-gw-ims-org-id', 'Authorization']
+    const errorMessage = checkMissingRequestInputs(params, requiredParams, requiredHeaders)
+    if (errorMessage) {
+        // return and log client errors
+        return errorResponse(400, errorMessage, logger)
+    }
+
+    // extract the user Bearer token from the Authorization header
+    const token = getBearerToken(params)
+
+    // replace this with the api you want to access
+    //const apiEndpoint = getApiEndpoint(params)
+
+    const journal_headers = {
+        'x-ims-org-id':params.__ow_headers['x-gw-ims-org-id'],
+        'x-api-key':params['apiKey'],
+        'Authorization':params.__ow_headers['authorization'],
+      }
+
+
+      journal_params = {
+        ims_org_id: journal_headers['x-ims-org-id'],
+        apiKey: journal_headers['x-api-key'],
+        journalling_url: params.journalling_url
+      }
+
+      const journalling = await fetchJournalling(journal_params, token);
+  
+    /**
+     * @ToDo - implement Key / Value to validate statuses of the event for do not reexport it again
+     * For now we just gettting last one
+     */
+      const uuidToExport = journalling.events[0].event.data.uuid;
+
+      const state = await stateLib.init()
+      const feedsInformation = await state.get('feeds') || {"value": {}}
+
+
+      const feedToExport = feedsInformation['value'][uuidToExport]
+
+      const body = feedToExport.feedBody
+
+
+      const products = queryProducts(params, requestLib)
+
+      const response = {
+        statusCode: 200,
+        body: products
+      }
+
+      return response
+
+  } catch (error) {
+    // log any server errors
+    logger.error(error)
+    // return with 500
+    return errorResponse(500, 'server error', logger)
+  }
+}
+
+async function fetchJournalling(params, token) {
+    const eventsClient = await Events.init(params.ims_org_id, params.apiKey, token)
+    journalling = await eventsClient.getEventsFromJournal(params.journalling_url, {}, true)
+    return journalling
+  }
+
+function getApiEndpoint(params) {
+    switch (params.action) {
+      case 'oldest':
+        return params.journalling_url
+      case 'next':
+        return params.next
+      case 'latest':
+        return params.journalling_url + '?latest=true'
+      default:
+        return null
+    }
+  }
+
+exports.main = main

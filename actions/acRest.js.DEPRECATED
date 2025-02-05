@@ -1,0 +1,42 @@
+async function getAllStores (params) {
+
+  const storesListUrl = params['rest_source'] + 'store/storeViews'
+  const storesList = await fetch(storesListUrl, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + params['rest_source_key']
+    }
+  })
+
+  let content = await storesList.text()
+  validateResponse(storesList, storesListUrl)
+  return content;
+}
+
+async function getAllWebsites (params) {
+
+  const websitesListUrl = params['rest_source'] + 'store/websites'
+  const websitesList = await fetch(websitesListUrl, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + params['rest_source_key']
+    }
+  })
+
+  let content = await websitesList.text()
+  validateResponse(websitesList, websitesListUrl)
+  return content;
+}
+
+function validateResponse(response, url) {
+  if (!response.ok) {
+    throw new Error(`failed request to '${url}' with status: ${response.status} and message: ${response.message}`)
+  }
+}
+
+module.exports = {
+  getAllStores,
+  getAllWebsites
+}

@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+  <html lang="en" class="spectrum spectrum--medium spectrum--light" dir="ltr">
+  
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="https://unpkg.com/@spectrum-css/vars/dist/spectrum-global.css" />
+    <link rel="stylesheet" href="https://unpkg.com/@spectrum-css/typography/index.css" />
+    <link rel="stylesheet" href="index.css" />
+
+    <!-- Include global variables first -->
+    <link rel="stylesheet" href="../node_modules/@spectrum-css/vars/dist/spectrum-global.css" />
+
+    <!-- Include only the scales your application needs -->
+    <link rel="stylesheet" href="../node_modules/@spectrum-css/vars/dist/spectrum-medium.css" />
+
+    <!-- Include only the colorstops your application needs -->
+    <link rel="stylesheet" href="../node_modules/@spectrum-css/vars/dist/spectrum-light.css" />
+
+    <!-- Include tokens -->
+    <link rel="stylesheet" href="../node_modules/@spectrum-css/tokens/dist/index.css" />
+
+    <!-- Include index-vars.css for all components you need -->
+    <link rel="stylesheet" href="../node_modules/@spectrum-css/page/dist/index-vars.css" />
+    <link rel="stylesheet" href="../node_modules/@spectrum-css/typography/dist/index-vars.css" />
+    <link rel="stylesheet" href="../node_modules/@spectrum-css/icon/dist/index-vars.css" />
+    <link rel="stylesheet" href="../node_modules/@spectrum-css/button/dist/index-vars.css" />
+    <link rel="stylesheet" href="../node_modules/@spectrum-css/table/dist/index-vars.css" />
+    <link rel="stylesheet" href="../node_modules/@spectrum-css/icon/dist/index-vars.css" />
+    <link rel="stylesheet" href="../node_modules/@spectrum-css/tooltip/dist/index-vars.css" />
+    <link rel="stylesheet" href="../node_modules/@spectrum-css/badge/dist/index-vars.css" />
+    <link rel="stylesheet" href="../node_modules/@spectrum-css/fieldlabel/dist/index-vars.css" />
+    <link rel="stylesheet" href="../node_modules/@spectrum-css/textfield/dist/index-vars.css" />
+    <link rel="stylesheet" href="../node_modules/@spectrum-css/checkbox/dist/index-vars.css" />
+
+    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous"> -->
+  <title>ComwrapFeedGenerator</title>
+  <script src="./src/utils.js" type="module"></script>
+  <script src="./src/index.js" type="module"></script>
+  <script src="./src/tribute.js"></script>
+
+  <script src="../node_modules/loadicons/index.js"></script>
+  <script>
+    loadIcons('../node_modules/@spectrum-css/icon/dist/spectrum-css-icons.svg');
+  </script>
+
+  <link rel="stylesheet" href="./src/tribute.css" />
+  
+</head>
+<body>
+  <h1 class="spectrum-Heading spectrum-Heading--sizeXL spectrum-Heading--light">Feed Generator.</h1>
+  <div style="display: block;">
+    <br /><br />
+    <p class="spectrum-Heading spectrum-Heading--sizeL spectrum-Heading--light">List of existing feeds</p>
+    <br />
+    <div style="display: none;" id="success-message-container" class="spectrum-Badge spectrum-Badge--sizeM spectrum-Badge--positive">
+      <div class="spectrum-Badge-label" id="success-message"></div>
+    </div>
+    <div id="">
+      <br />
+      <table class="spectrum-Table spectrum-Table--sizeM">
+        <thead class="spectrum-Table-head">
+          <tr>
+            <th class="spectrum-Table-headCell" scope="col">UUID</th>
+            <th class="spectrum-Table-headCell" scope="col">Name</th>
+            <th class="spectrum-Table-headCell" scope="col">Store</th>
+            <th class="spectrum-Table-headCell" scope="col">Link</th>
+            <th class="spectrum-Table-headCell" scope="col">Created At</th>
+            <th class="spectrum-Table-headCell" scope="col">Generated At</th>
+            <th class="spectrum-Table-headCell" scope="col">Type</th>
+            <th class="spectrum-Table-headCell" scope="col">Status</th>
+            <th class="spectrum-Table-headCell" scope="col">Action</th>
+          </tr>
+        </thead>
+        <tbody class="spectrum-Table-body" id="feedsList"></tbody>
+      </table>
+    </div>
+  </div>
+  <br /><br /> 
+  <h2 class="spectrum-Heading spectrum-Heading--sizeL spectrum-Heading--light">Create New Feed</h2>
+  <br />
+  <form id='actionForm' style="width: 700px;">
+    <div class="spectrum-Form spectrum-Form--labelsAbove" >
+      <div class="spectrum-Form-item">
+          <label for="feedName" class="spectrum-FieldLabel spectrum-FieldLabel--sizeM spectrum-Form-itemLabel">Name of the Feed (internal use)</label>
+          <div class="spectrum-Form-itemField">
+            <div class="spectrum-Textfield">
+              <input id='feedName' class="spectrum-Textfield-input" name='feedName' />
+            </div>
+          </div>
+        </div>
+        <div class="spectrum-Form-item">
+          <label for="stores" class="spectrum-FieldLabel spectrum-FieldLabel--sizeM spectrum-Form-itemLabel">Feed Type</label>
+          <div name='feed_type'>
+            <select id="feed_type" class="form-control" name="feed_type">
+                <option value="xml">XML</option>
+                <option value="json">JSON</option>
+                <option value="csv">CSV</option>
+              </select>
+          </div>
+        </div>
+        <div class="spectrum-Form-item">
+          <label for="feedHeader" class="spectrum-FieldLabel spectrum-FieldLabel--sizeM spectrum-Form-itemLabel">Body Header</label>
+          <div class="spectrum-Form-itemField">
+            <div class="" style="width: 500px;">
+              <textarea id='feedHeader' class="" name='feedHeader' style="width: 500px; height: 150px;"></textarea>
+            </div>
+          </div>      
+        </div>
+        <div class="spectrum-Form-item">
+          <label for="feedBody" class="spectrum-FieldLabel spectrum-FieldLabel--sizeM spectrum-Form-itemLabel">Body of the single Feed item</label>
+          <div class="spectrum-Form-itemField">
+            <div class="" id="feedBody-container" style="width: 500px;">
+              <textarea id='feedBody' class="" name='feedBody' style="width: 500px; height: 400px;"></textarea>
+            </div>
+          </div>      
+        </div>
+        <div class="spectrum-Form-item">
+          <label for="feedFooter" class="spectrum-FieldLabel spectrum-FieldLabel--sizeM spectrum-Form-itemLabel">Body Footer</label>
+          <div class="spectrum-Form-itemField">
+            <div class="" style="width: 500px;">
+              <textarea id='feedFooter' class="" name='feedFooter' style="width: 500px; height: 150px;"></textarea>
+            </div>
+          </div>      
+        </div>
+        <div class="spectrum-Form-item">
+          <label for="stores" class="spectrum-FieldLabel spectrum-FieldLabel--sizeM spectrum-Form-itemLabel">Adobe Commerce Store</label>
+          <div id='stores' name='stores'>
+            <select id="store_code" class="form-control" name="store_code"></select>
+          </div>
+        </div>
+        <div class="spectrum-Form-item">
+          <label for="stores" class="spectrum-FieldLabel spectrum-FieldLabel--sizeM spectrum-Form-itemLabel">Apply to Product Types:</label>
+          <label class="spectrum-Checkbox spectrum-Checkbox--sizeM">
+            <input type="checkbox" class="spectrum-Checkbox-input" id="productType[simple_product]" name="productType" value="simple_product" checked>
+            <span class="spectrum-Checkbox-box">
+              <svg class="spectrum-Icon spectrum-UIIcon-Checkmark100 spectrum-Checkbox-checkmark" focusable="false" aria-hidden="true">
+                <use xlink:href="#spectrum-css-icon-Checkmark100" />
+              </svg>
+              <svg class="spectrum-Icon spectrum-UIIcon-Dash100 spectrum-Checkbox-partialCheckmark" focusable="false" aria-hidden="true">
+                <use xlink:href="#spectrum-css-icon-Dash100" />
+              </svg>
+            </span>
+            <span class="spectrum-Checkbox-label">Simple Products</span>
+          </label>
+          <label class="spectrum-Checkbox spectrum-Checkbox--sizeM">
+            <input type="checkbox" class="spectrum-Checkbox-input" id="productType[configurable_product]" name="productType" value="configurable_product">
+            <span class="spectrum-Checkbox-box">
+              <svg class="spectrum-Icon spectrum-UIIcon-Checkmark100 spectrum-Checkbox-checkmark" focusable="false" aria-hidden="true">
+                <use xlink:href="#spectrum-css-icon-Checkmark100" />
+              </svg>
+              <svg class="spectrum-Icon spectrum-UIIcon-Dash100 spectrum-Checkbox-partialCheckmark" focusable="false" aria-hidden="true">
+                <use xlink:href="#spectrum-css-icon-Dash100" />
+              </svg>
+            </span>
+            <span class="spectrum-Checkbox-label">Configurable Products</span>
+          </label>
+          <label class="spectrum-Checkbox spectrum-Checkbox--sizeM">
+            <input type="checkbox" class="spectrum-Checkbox-input" id="productType[bundle_product]" name="productType" value="bundle_product">
+            <span class="spectrum-Checkbox-box">
+              <svg class="spectrum-Icon spectrum-UIIcon-Checkmark100 spectrum-Checkbox-checkmark" focusable="false" aria-hidden="true">
+                <use xlink:href="#spectrum-css-icon-Checkmark100" />
+              </svg>
+              <svg class="spectrum-Icon spectrum-UIIcon-Dash100 spectrum-Checkbox-partialCheckmark" focusable="false" aria-hidden="true">
+                <use xlink:href="#spectrum-css-icon-Dash100" />
+              </svg>
+            </span>
+            <span class="spectrum-Checkbox-label">Bundle Products</span>
+          </label>
+          <label class="spectrum-Checkbox spectrum-Checkbox--sizeM">
+            <input type="checkbox" class="spectrum-Checkbox-input" id="productType[grouped_product]" name="productType" value="grouped_product">
+            <span class="spectrum-Checkbox-box">
+              <svg class="spectrum-Icon spectrum-UIIcon-Checkmark100 spectrum-Checkbox-checkmark" focusable="false" aria-hidden="true">
+                <use xlink:href="#spectrum-css-icon-Checkmark100" />
+              </svg>
+              <svg class="spectrum-Icon spectrum-UIIcon-Dash100 spectrum-Checkbox-partialCheckmark" focusable="false" aria-hidden="true">
+                <use xlink:href="#spectrum-css-icon-Dash100" />
+              </svg>
+            </span>
+            <span class="spectrum-Checkbox-label">Grouped Products</span>
+          </label>
+          <label class="spectrum-Checkbox spectrum-Checkbox--sizeM">
+            <input type="checkbox" class="spectrum-Checkbox-input" id="productType[virtual_product]" name="productType" value="virtual_product">
+            <span class="spectrum-Checkbox-box">
+              <svg class="spectrum-Icon spectrum-UIIcon-Checkmark100 spectrum-Checkbox-checkmark" focusable="false" aria-hidden="true">
+                <use xlink:href="#spectrum-css-icon-Checkmark100" />
+              </svg>
+              <svg class="spectrum-Icon spectrum-UIIcon-Dash100 spectrum-Checkbox-partialCheckmark" focusable="false" aria-hidden="true">
+                <use xlink:href="#spectrum-css-icon-Dash100" />
+              </svg>
+            </span>
+            <span class="spectrum-Checkbox-label">Virtual Products</span>
+          </label>
+        </div>
+        <input type="hidden" class="form-control" id="uuid" name="uuid" value="" />
+      </div>
+      <div style="margin-top: 50px;">
+        <button style="white-space: nowrap; margin-right: 10px;" type="submit" class="spectrum-Button spectrum-Button--fill spectrum-Button--accent spectrum-Button--sizeM">
+          <span class="spectrum-Button-label">Save</span>
+        </button> 
+
+        <button style="white-space: nowrap; margin-right: 10px;" id="regenerateAction" class="spectrum-Button spectrum-Button--fill spectrum-Button--accent spectrum-Button--sizeM">
+          <span class="spectrum-Button-label">Regenerate Feed</span>
+        </button>
+        
+        <button style="white-space: nowrap; margin-right: 10px;" id="resetForm" class="spectrum-Button spectrum-Button--fill spectrum-Button--accent spectrum-Button--sizeM">
+          <span class="spectrum-Button-label">Reset Form</span>
+        </button>
+      </div>
+    </div>
+  </form>
+  <div>
+    <h2>results</h2>
+    <textarea id='taOutput' readonly spellcheck="false" style="min-height:260px;"></textarea>
+  </div>
+  <!-- <button id="testPartialGeneration" class="spectrum-Button spectrum-Button--fill spectrum-Button--accent spectrum-Button--sizeM">
+    <span class="spectrum-Button-label">Test Partial Generation</span>
+  </button> -->
+
+</body>
+</html>

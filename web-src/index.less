@@ -1,0 +1,94 @@
+//
+//  Global Styles
+//  _____________________________________________
+
+:root {
+    --spectrum-global-color-blue-900: #0265DC;
+}
+
+html, body {
+    font-size: 14px;
+    line-height: 21px;
+    font-family: adobe-clean-ux, adobe-clean, "Source Sans Pro", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+//
+//  Typography
+//  _____________________________________________
+
+body a,
+body [class*="spectrum-Link"]{
+    color: var(--spectrum-global-color-blue-900);
+}
+
+//
+//  Add Feed Form
+//  _____________________________________________
+
+[data-section="dialog-add-feed"] {
+    [data-section="actions"] {
+        margin-top: 20px;
+    }
+
+    .CodeEditorWrapper {
+        height: 100%;
+        background: #ffffff;
+        border: var(--spectrum-alias-input-border-size) solid;
+        border-color: var(--spectrum-textfield-border-color, var(--spectrum-alias-border-color));
+        border-radius: var(--spectrum-textfield-border-radius, var(--spectrum-alias-border-radius-regular));
+        color: var(--spectrum-textfield-text-color, var(--spectrum-alias-text-color));
+    }
+    .codemirror-ref {
+        height:100%;
+    }
+    .cm-editor{
+        height:100%;
+    }
+}
+
+body [class*="spectrum-FieldLabel"],
+body .spectrum-Form-itemLabel {
+    font-size: 14px;
+}
+
+.spectrum-Form-itemLabel {
+    font-size: 12px;
+    display: block;
+    padding: 4px 0 5px;
+    color: rgb(70, 70, 70);
+}
+
+//
+//  Feeds
+//  _____________________________________________
+
+[aria-label="Feeds"] {
+    .heading-title {
+        color: #6E6E6E;
+        font-weight: 700;
+    }
+
+    .cell.status {
+        display: flex;
+        gap: 10px;
+    }
+}
+
+//
+//  Recent Feeds
+//  _____________________________________________
+
+.block-recent-feeds {
+    .heading {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+    }
+}
+
+.info-table {
+    border: none;
+    div {
+        border: none;
+    }
+}

@@ -1,0 +1,59 @@
+const {getIntrospectionQuery, buildClientSchema} = require("graphql");
+const {errorResponse} = require("./utils");
+
+async function queryProducts (params, gqlRequest, variables = {}) {
+  let products = await callGql(params, gqlRequest, variables = {})
+  return products
+}
+
+async function callGql(params, gqlRequest, variables = {}) {
+
+  const gqlUrl = params['graphql_source']
+  const requestBody = {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Store': params.store_code
+    },
+    body: JSON.stringify({
+      query: gqlRequest,
+      variables: variables
+    })
+  }
+  const products = await fetch(gqlUrl, requestBody)
+  let content = await products.json()
+  return content;
+
+}
+
+/**
+ * Return GQL schema or throw error
+ *
+ * @param params
+ * @returns {Promise<{error: {body: {error: string}, statusCode: number}}|any>}
+ */
+async function getGqlSchema(params) {
+  const gqlUrl = params['mesh_source_url']
+
+  const introspectionQuery = getIntrospectionQuery();
+  let tty = JSON.stringify({query: introspectionQuery});
+  const result = await fetch(gqlUrl, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({query: introspectionQuery}),
+  });
+
+  const schema = result.json();
+  if (result.errors) {
+    return errorResponse(500, 'server error' + result.errors[0].message, logger)
+  }
+
+  return schema;
+}
+
+module.exports = {
+  queryProducts,
+  getGqlSchema
+}

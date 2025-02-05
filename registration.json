@@ -1,0 +1,10 @@
+{
+  "delivery_type": "JOURNAL",
+  "events_of_interest": [
+    {
+      "event_code": "feed.generate",
+      "provider_id": "efc52835-c94d-4648-95d7-1cc0b462cd0e"
+    }
+  ],
+  "name": "Start Feed Generation"
+}
