@@ -34,7 +34,7 @@ On a feed list you can find:
 
 If during feed generation an error occurs, you can see an error in the grid.
 
-![Feed Generation Error](./docs/images/feed-error.png)
+![Feed Generation Error](./docs/images/feeder-error.png)
 
 ## Edit Feed
 
@@ -105,7 +105,7 @@ Based on this GQL schema you can use the following variables (starting inside of
 GraphQL schema loaded from Adobe Commerce is cached by the module. So if you change schema on Adobe Commerce side, you have to update the cache.
 For that go to Settings and click on clean the cache button.
 
-![Settings](./docs/images/feed-settings.png)
+![Settings](./docs/images/feeder-settings.png)
 
 ### Placeholders
 
