@@ -32,6 +32,10 @@ On a feed list you can find:
 * **In Process - generation is currently in progress**
 * **Generated - Feed it ready to be used**
 
+If during feed generation an error occurs, you can see an error in the grid.
+
+![Feed Generation Error](./docs/images/feed-error.png)
+
 ## Edit Feed
 
 On a Grid page you can click on a Feed name, and you will be landed on Edit page of selected feed: 
@@ -95,6 +99,13 @@ Based on this GQL schema you can use the following variables (starting inside of
 * {{price_range.minimum_price.regular_price.currency}}
 
 … and so on depends on a schema used
+
+## Settings
+
+GraphQL schema loaded from Adobe Commerce is cached by the module. So if you change schema on Adobe Commerce side, you have to update the cache.
+For that go to Settings and click on clean the cache button.
+
+![Settings](./docs/images/feed-settings.png)
 
 ### Placeholders
 
