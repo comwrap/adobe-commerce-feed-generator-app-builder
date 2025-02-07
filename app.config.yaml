@@ -1,0 +1,106 @@
+application:
+  actions: actions
+  web: web-src
+  runtimeManifest:
+    packages:
+      feed-generator:
+        license: Apache-2.0
+        inputs:
+          LOG_LEVEL: debug
+          apiKey: $SERVICE_API_KEY
+          mesh_source_url: $MESH_SOURCE_URL
+          m-ac-rest-api-token: $AC_API_TOKEN
+          m-ac-gql-store-code: $AC_DEFAULT_STORE_CODE
+        actions:
+          saveFeed:
+            function: actions/saveFeed/index.js
+            web: 'yes'
+            runtime: nodejs:16
+            annotations:
+              require-adobe-auth: true
+              final: true
+          deleteFeed:
+            function: actions/deleteFeed/index.js
+            web: 'yes'
+            runtime: nodejs:16
+            annotations:
+              require-adobe-auth: true
+              final: true
+          getAllFeeds:
+            function: actions/getAllFeeds/index.js
+            web: 'yes'
+            runtime: nodejs:16
+            annotations:
+              require-adobe-auth: true
+              final: true
+          getFeedByUuid:
+            function: actions/getAllFeeds/getByUuid.js
+            web: 'yes'
+            runtime: nodejs:16
+            annotations:
+              require-adobe-auth: true
+              final: true
+          regenerateFeed:
+            function: actions/regenerateFeed/index.js
+            web: 'yes'
+            runtime: nodejs:16
+            inputs:
+              providerId: $FEED_GENERATOR_PROVIDER_ID
+              eventCode: feed.generate
+            annotations:
+              require-adobe-auth: true
+              final: true
+          processGeneration:
+            function: actions/regenerateFeed/generate.js
+            web: 'no'
+            runtime: nodejs:16
+            inputs:
+              eventCode: feed.generate
+            annotations:
+              require-adobe-auth: false
+              final: true
+            relations:
+              event-listener-for:
+                - feed.generate
+          generatePartial:
+            function: actions/regenerateFeed/generatePartial.js
+            web: 'no'
+            runtime: nodejs:16
+            inputs:
+              eventCode: feed.generate
+            annotations:
+              require-adobe-auth: false
+              final: true
+            relations:
+              event-listener-for:
+                - feed.generate
+          generateByCron:
+            function: actions/regenerateFeed/generateByCron.js
+            web: 'no'
+            runtime: nodejs:16
+            annotations:
+              require-adobe-auth: false
+              final: true
+          getAllStores:
+            function: actions/magentoActions/getAllStores.js
+            web: 'yes'
+            runtime: nodejs:16
+            annotations:
+              require-adobe-auth: true
+              final: true
+          getGqlSchema:
+            function: actions/magentoActions/getGqlSchema.js
+            web: 'yes'
+            runtime: nodejs:16
+            annotations:
+              require-adobe-auth: true
+              final: true
+        triggers:
+          everyHalfOfHour:
+            feed: /whisk.system/alarms/interval
+            inputs:
+              minutes: 30
+        rules:
+          everyHalfOfHourRule:
+            trigger: everyHalfOfHour
+            action: generateByCron
