@@ -41,5 +41,4 @@ coverage
 # logs folder for aio-run-detached
 logs
 
-app.config.yaml
 adobe-api/mesh/mesh.json

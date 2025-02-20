@@ -32,13 +32,15 @@ async function generateFeed(uuid, params) {
             feedsInformation = await state.get('feeds_' + uuidToExport) || null
             if (feedsInformation == null) {
                 return new ActionResponse(200, "Feed does not exists");
+            } else {
+                feedsInformation['value'] = JSON.parse(feedsInformation['value'])
             }
         } else {
             feedsInformation = {
                 "expiration": "2023-03-03T12:58:47.000Z",
                 "value": {
                     "created_at": "2023-03-02T12:58:47.770Z",
-                    "feedBody": "<item>\n  <g:id>{{sku}}</g:id>\n  <title>{{name}}</title>\n  <description>{{description.html}}</description>\n  <link>https://eventing-clzaefa-bm5l4hpp6cb3s.eu-4.magentosite.cloud/{{url_key}}</link>\n  <g:image_link>{{thumbnail.url}}</g:image_link>\n  <g:condition>new</g:condition>\n  <g:price>{{price_range.maximum_price.final_price.value}}</g:price>\n  <g:tax>\n    <g:country>DE</g:country>\n    <g:rate>0</g:rate>\n    <g:tax_ship>y</g:tax_ship>\n  </g:tax>\n  <g:shipping>\n    <g:country>DE</g:country>\n    <g:price>0 EUR</g:price>\n  </g:shipping>\n  <g:availability>In Stock</g:availability>\n  <g:identifier_exists>TRUE</g:identifier_exists>\n  <g:product_type>Category will come soon</g:product_type>\n  <g:sale_price>{{price_range.minimum_price.final_price.value}}</g:sale_price><g:additional_image_link>{{media_gallery.url count=5}}</g:additional_image_link>\n</item>",
+                    "feedBody": "<item>\n  <g:id>{{sku}}</g:id>\n  <title>{{name}}</title>\n  <description>{{description.html}}</description>\n  <link></link>\n  <g:image_link>{{thumbnail.url}}</g:image_link>\n  <g:condition>new</g:condition>\n  <g:price>{{price_range.maximum_price.final_price.value}}</g:price>\n  <g:tax>\n    <g:country>DE</g:country>\n    <g:rate>0</g:rate>\n    <g:tax_ship>y</g:tax_ship>\n  </g:tax>\n  <g:shipping>\n    <g:country>DE</g:country>\n    <g:price>0 EUR</g:price>\n  </g:shipping>\n  <g:availability>In Stock</g:availability>\n  <g:identifier_exists>TRUE</g:identifier_exists>\n  <g:product_type>Category will come soon</g:product_type>\n  <g:sale_price>{{price_range.minimum_price.final_price.value}}</g:sale_price><g:additional_image_link>{{media_gallery.url count=5}}</g:additional_image_link>\n</item>",
                     "feedFooter": "</items>",
                     "feedHeader": "<items>",
                     "feedName": "Test XML",
@@ -54,7 +56,7 @@ async function generateFeed(uuid, params) {
 
         feedToExport.status = "in progress"
         if (!isDebugMode) {
-            await state.put('feeds_' + uuidToExport, feedToExport, {ttl: -1})
+            await state.put('feeds_' + uuidToExport, JSON.stringify(feedToExport), {ttl: stateLib.MAX_TTL})
         }
 
         const feed = feedToExport.feedBody
@@ -64,7 +66,7 @@ async function generateFeed(uuid, params) {
             feedToExport.status = "error"
             feedToExport.error = "Export format or Store Code is not defined"
             if (!isDebugMode) {
-                await state.put('feeds_' + uuidToExport, feedToExport, {ttl: -1})
+                await state.put('feeds_' + uuidToExport, JSON.stringify(feedToExport), {ttl: stateLib.MAX_TTL})
             }
             return new ActionResponse(506,"Export format or Store Code is not defined");
         }
@@ -75,7 +77,7 @@ async function generateFeed(uuid, params) {
                 feedToExport.status = "error"
                 feedToExport.error = "XML Validation failed: " + validationResult.err.msg
                 if (!isDebugMode) {
-                    await state.put('feeds_' + uuidToExport, feedToExport, {ttl: -1})
+                    await state.put('feeds_' + uuidToExport, JSON.stringify(feedToExport), {ttl: stateLib.MAX_TTL})
                 }
 
                 return new ActionResponse(506, feedToExport.error)
@@ -123,7 +125,7 @@ async function generateFeed(uuid, params) {
                 feedToExport.status = "error"
                 feedToExport.error = products.errors[0].message + "<br /> Request was: " + JSON.stringify(gqlQuery)
                 if (!isDebugMode) {
-                    await state.put('feeds_' + uuidToExport, feedToExport, {ttl: -1})
+                    await state.put('feeds_' + uuidToExport, JSON.stringify(feedToExport), {ttl: stateLib.MAX_TTL})
                 }
 
                 return new ActionResponse(506, products.errors[0].message)
@@ -178,7 +180,7 @@ async function generateFeed(uuid, params) {
 
         if (!isDebugMode) {
             let files = await filesLib.init()
-            let savedFile = await files.write('public/feeds/' + uuidToExport + '.' + feedToExport.feed_type, requestBody)
+            await files.write('public/feeds/' + uuidToExport + '.' + feedToExport.feed_type, requestBody)
             const props = await files.getProperties('public/feeds/' + uuidToExport + '.' + feedToExport.feed_type)
             feedToExport.file_path = props.url
         }
@@ -188,7 +190,7 @@ async function generateFeed(uuid, params) {
         feedToExport.error = ""
 
         if (!isDebugMode) {
-            await state.put('feeds_' + uuidToExport, feedToExport, {ttl: -1})
+            await state.put('feeds_' + uuidToExport, JSON.stringify(feedToExport), {ttl: stateLib.MAX_TTL})
         }
 
         const endTime = performance.now()

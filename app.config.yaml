@@ -15,35 +15,35 @@ application:
           saveFeed:
             function: actions/saveFeed/index.js
             web: 'yes'
-            runtime: nodejs:16
+            runtime: nodejs:20
             annotations:
               require-adobe-auth: true
               final: true
           deleteFeed:
             function: actions/deleteFeed/index.js
             web: 'yes'
-            runtime: nodejs:16
+            runtime: nodejs:20
             annotations:
               require-adobe-auth: true
               final: true
           getAllFeeds:
             function: actions/getAllFeeds/index.js
             web: 'yes'
-            runtime: nodejs:16
+            runtime: nodejs:20
             annotations:
               require-adobe-auth: true
               final: true
           getFeedByUuid:
             function: actions/getAllFeeds/getByUuid.js
             web: 'yes'
-            runtime: nodejs:16
+            runtime: nodejs:20
             annotations:
               require-adobe-auth: true
               final: true
           regenerateFeed:
             function: actions/regenerateFeed/index.js
             web: 'yes'
-            runtime: nodejs:16
+            runtime: nodejs:20
             inputs:
               providerId: $FEED_GENERATOR_PROVIDER_ID
               eventCode: feed.generate
@@ -53,19 +53,7 @@ application:
           processGeneration:
             function: actions/regenerateFeed/generate.js
             web: 'no'
-            runtime: nodejs:16
-            inputs:
-              eventCode: feed.generate
-            annotations:
-              require-adobe-auth: false
-              final: true
-            relations:
-              event-listener-for:
-                - feed.generate
-          generatePartial:
-            function: actions/regenerateFeed/generatePartial.js
-            web: 'no'
-            runtime: nodejs:16
+            runtime: nodejs:20
             inputs:
               eventCode: feed.generate
             annotations:
@@ -77,21 +65,21 @@ application:
           generateByCron:
             function: actions/regenerateFeed/generateByCron.js
             web: 'no'
-            runtime: nodejs:16
+            runtime: nodejs:20
             annotations:
               require-adobe-auth: false
               final: true
           getAllStores:
             function: actions/magentoActions/getAllStores.js
             web: 'yes'
-            runtime: nodejs:16
+            runtime: nodejs:20
             annotations:
               require-adobe-auth: true
               final: true
           getGqlSchema:
             function: actions/magentoActions/getGqlSchema.js
             web: 'yes'
-            runtime: nodejs:16
+            runtime: nodejs:20
             annotations:
               require-adobe-auth: true
               final: true

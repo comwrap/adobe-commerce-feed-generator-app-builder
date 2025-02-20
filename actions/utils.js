@@ -140,8 +140,10 @@ function errorResponse (statusCode, message, logger) {
  */
 function deepMerge(target, source) {
   for (const key in source) {
+    // eslint-disable-next-line no-prototype-builtins
     if (source.hasOwnProperty(key)) {
       if (typeof source[key] === 'object' && !Array.isArray(source[key]) && source[key] !== null) {
+        // eslint-disable-next-line no-prototype-builtins
         if (!target.hasOwnProperty(key)) {
           target[key] = {};
         }

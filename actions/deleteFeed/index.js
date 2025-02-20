@@ -1,8 +1,6 @@
-const {v4: uuidv4} = require('uuid');
-const fetch = require('node-fetch')
 const {Core} = require('@adobe/aio-sdk')
 const stateLib = require('@adobe/aio-lib-state')
-const {errorResponse, getBearerToken, stringParameters, checkMissingRequestInputs} = require('./../utils.js')
+const {errorResponse} = require('./../utils.js')
 
 // delete feed by uuid
 async function main(params) {
@@ -20,17 +18,17 @@ async function main(params) {
         if (uuid === null || typeof uuid == 'undefined' || uuid == 'undefined' || uuid == undefined) {
             return responseData
         }
-        const [deleteResult, feedsInformation] = await Promise.all([
-            state.delete('feeds_' + uuid),
-            state.get('feeds_list') || {"value": {}}
-        ])
+        
+        let feedsInformation = await state.get('feeds_list') || {"value": "{}"};
+
+        await state.delete('feeds_' + uuid);
 
         // remove uuid from feed list
-        const feedsList = feedsInformation['value']
+        const feedsList = JSON.parse(feedsInformation['value'])
         const indexToRemove = Object.values(feedsList).indexOf(uuid);
         if (indexToRemove > -1) {
             delete feedsList[indexToRemove];
-            await state.put('feeds_list', feedsList, { ttl: -1 });
+            await state.put('feeds_list', JSON.stringify(feedsList), { ttl: stateLib.MAX_TTL });
         }
 
         return responseData

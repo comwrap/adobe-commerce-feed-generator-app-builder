@@ -20,11 +20,14 @@ To required environment add:
 ### Adobe Api Mesh
 
 1. Add "Api Mesh" service to your environment.
-2. Rename file `adobe-api/mesh.json.dist` into `adobe-api/mesh.json`.
-3. Change required options inside `adobe-api/mesh.json`.
-    * MAGENTO-URL
-    * MAGENTO-TOKEN
-3. Provision Mesh by using this file.
+2. Rename file `adobe-api/mesh/mesh.json.dist` into `adobe-api/mesh/mesh.json`.
+3. Change required options inside `adobe-api/mesh/mesh.json`.
+    * MAGENTO-URL (This should be your Adobe Commerce system's base URL.)
+    * MAGENTO-TOKEN 
+
+    You can obtain the token by following these [steps](https://experienceleague.adobe.com/en/docs/commerce-admin/systems/integrations). Copy the Access Token value once generated. Additionally, you need to enable the "[Integration Token](https://experienceleague.adobe.com/en/docs/commerce-admin/systems/integrations)" functionality if it is not enabled yet. The generated token does not expire, but it can be updated if necessary.
+
+3. Provision Mesh by using this file with `aio api-mesh create adobe-api/mesh/mesh.json`.
 
 ## Installation
 
@@ -46,9 +49,9 @@ Add to `.env` line `FEED_GENERATOR_PROVIDER_ID=<id>`
 
 7. Create Event Metadata for Feed Generator. Run `aio event eventmetadata create PROVIDERID`. Define event code as `feed.generate` and define description as `Generate Feed`.
 
-8. Go To your application environment via Browser. Click on "Add Service" -> Event -> 3rd Party Custom Events -> And select your provider and event subscription. In Receiver define "Runtime action" as `processGeneration` action.
+8. Run `aio app deploy` to deploy the app.
 
-9. Run `aio app deploy` to deploy the app.
+9. Go To your application environment via Browser. Click on "Add Service" -> Event -> 3rd Party Custom Events -> And select your provider and event subscription. In Receiver define "Runtime action" as `processGeneration` action.
 
-10. App is ready to use. Pls save the link to your application environment. Additionally you can replacate all steps on your Production environment and publich application, so it will be available on your exchange dashboard.
+10. The app is ready to use. Please save the link to your application environment. Additionally, you can replicate all steps in your production environment and publish the application, so it will be available on your exchange dashboard.
 

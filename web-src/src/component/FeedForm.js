@@ -22,12 +22,6 @@ import {ToastContainer, ToastQueue} from '@react-spectrum/toast'
 import moment from "moment";
 
 
-// import { Controlled as CodeMirror } from 'react-codemirror2'
-
-// require('codemirror/lib/codemirror.css');
-// require('codemirror/theme/material.css');
-// require('codemirror/mode/javascript/javascript');
-
 import {actionWebInvoke, getAction, invokeAction} from '../utils'
 import {validateStateAgainstValue, validateFeedForm} from './validators/FormValidator'
 import actions from "../config.json";

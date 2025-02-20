@@ -1,4 +1,3 @@
-const fetch = require('node-fetch')
 const { Core } = require('@adobe/aio-sdk')
 const { errorResponse } = require('../utils.js')
 const zlib  = require('react-zlib-js')

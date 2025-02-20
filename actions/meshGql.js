@@ -1,7 +1,3 @@
-const fetch = require('node-fetch')
-const {errorResponse} = require("./utils.js");
-const {Core} = require('@adobe/aio-sdk')
-
 async function callMeshGql(gqlRequest, params, variables = {}) {
 
   const gqlUrl = params['mesh_source_url']

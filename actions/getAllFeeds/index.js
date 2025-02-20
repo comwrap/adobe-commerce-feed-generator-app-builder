@@ -1,8 +1,6 @@
-const {v4: uuidv4} = require('uuid');
-const fetch = require('node-fetch')
 const {Core} = require('@adobe/aio-sdk')
 const stateLib = require('@adobe/aio-lib-state')
-const {errorResponse, getBearerToken, stringParameters, checkMissingRequestInputs} = require('./../utils.js')
+const {errorResponse} = require('./../utils.js')
 
 // main function that will be executed by Adobe I/O Runtime
 async function main(params) {
@@ -12,24 +10,17 @@ async function main(params) {
     try {
         const state = await stateLib.init()
 
-        const feedsInformation = await state.get('feeds_list') || {"value": {}}
+        let feedsInformation = await state.get('feeds_list') || {"value": "{}"};
 
         let feedsListData = {}
-
-        // for (let i = 1; i < Object.keys(feedsInformation['value']).length; i++) {
-        //   const feedJson = await state.get('feeds_' + feedsInformation['value'][i]) || 0
-        //   feedsListData[feedsInformation['value'][i]] = feedJson
-        // }
-
-        const feedUuids = Object.values(feedsInformation['value']);
-        let i = 1;
+        const feedUuids = Object.values(JSON.parse(feedsInformation['value']));
         for (const uuid of feedUuids) {
-            const feedJson = await state.get('feeds_' + uuid)
+            let feedJson = await state.get('feeds_' + uuid)
             if (typeof feedJson === 'undefined' || feedJson === '' || feedJson === null) {
                 continue;
             }
             feedsListData[uuid] = feedJson
-            i++;
+            feedsListData[uuid].value = JSON.parse(feedJson['value'])
         }
 
         const response = {

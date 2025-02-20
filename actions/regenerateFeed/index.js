@@ -3,7 +3,7 @@ const uuid = require('uuid')
 const {
   CloudEvent
 } = require("cloudevents");
-const { errorResponse, getBearerToken, stringParameters, checkMissingRequestInputs } = require('./../utils.js')
+const { errorResponse, getBearerToken, checkMissingRequestInputs } = require('./../utils.js')
 
 // main function that will be executed by Adobe I/O Runtime
 async function main (params) {
@@ -46,7 +46,7 @@ async function main (params) {
     }
 
     const response = {
-      statusCode: 200,
+      statusCode: statusCode,
       body: published
     }
 

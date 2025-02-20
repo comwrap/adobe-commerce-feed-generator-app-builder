@@ -1,8 +1,7 @@
 const { v4: uuidv4 } = require('uuid');
-const fetch = require('node-fetch')
 const { Core } = require('@adobe/aio-sdk')
 const stateLib = require('@adobe/aio-lib-state')
-const { errorResponse, getBearerToken, stringParameters, checkMissingRequestInputs } = require('./../utils.js')
+const { errorResponse } = require('./../utils.js')
 
 // main function that will be executed by Adobe I/O Runtime
 async function main (params) {
@@ -18,7 +17,9 @@ async function main (params) {
       uuid = params.uuid
     } else {
 
-      const feedsInformation = await state.get('feeds_list') || {"value": {}}
+      let feedsInformation = await state.get('feeds_list') || {"value": '{}'}
+      feedsInformation['value'] = JSON.parse(feedsInformation['value'])
+
       const newFeedsList = feedsInformation['value']
 
       if (Object.keys(newFeedsList).length === 0) {
@@ -37,7 +38,7 @@ async function main (params) {
       /**
        * Re-save feeds list
        */
-      await state.put('feeds_list', newFeedsList, { ttl: -1 })
+      await state.put('feeds_list', JSON.stringify(newFeedsList), { ttl: stateLib.MAX_TTL })
 
     }
     
@@ -47,11 +48,10 @@ async function main (params) {
     params['feed'].created_at = new Date()
     params['feed'].generated_at = ""
     params['feed'].status = "pending"
-    await state.put('feeds_' + uuid, params['feed'], { ttl: -1 })
+    await state.put('feeds_' + uuid, JSON.stringify(params['feed']), { ttl: stateLib.MAX_TTL })
 
     params['feed'].uuid = uuid
 
-    const allFeeds = await state.get('feeds_list')
     const response = {
       statusCode: 200,
       body: params['feed']

@@ -1,4 +1,3 @@
-const {Core} = require('@adobe/aio-sdk')
 const {generateFeed} = require('./../utils/generation.js')
 
 // main function that will be executed by Adobe I/O Runtime

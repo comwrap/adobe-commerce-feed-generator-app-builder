@@ -54,8 +54,9 @@ const handleNoProperties = (placeholder, item, feed, type) => {
 
 const handleCategories = (placeholder, item, feed, type) => {
   
-  const logger = Core.Logger('main', {level: 'info'})
-  
+  // const logger = Core.Logger('main', {level: 'info'})
+
+  // eslint-disable-next-line no-unused-vars
   const [dataKey, placeholderProperties] = extractFromPlaceholder(placeholder);
 
   // logger.error("handleCategories START");

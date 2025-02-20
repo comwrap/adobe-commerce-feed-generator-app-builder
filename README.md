@@ -4,7 +4,7 @@ Feed Generator is a service that simplifies the process of generating product fe
 
 ## Installation
 
-Pls see [INSTALL.md](INSTALL.md) for more details.
+Please see [INSTALL.md](INSTALL.md) for more details.
 
 ## Home page / Grid
 
@@ -60,7 +60,7 @@ Here you can change the following elements:
 
 ### Feed Body
 
-For feed body variables can be used. Variables are representing GQL schem that being used (by default it is a Adobe Commerce schema).
+Variables can be used for the feed body. These variables represent the GraphQL schema being used (by default, it is the Adobe Commerce schema).
 
 Example:
 
@@ -99,6 +99,68 @@ Based on this GQL schema you can use the following variables (starting inside of
 * {{price_range.minimum_price.regular_price.currency}}
 
 … and so on depends on a schema used
+
+### Filtering
+
+Without applying filters, the system will attempt to fetch all available products for the selected store. To narrow down the selection, you can apply custom filters.
+
+![Filtering](./docs/images/feed-filtering.png)
+
+#### Search
+
+In the search field, you can enter any search term, and it will be applied to the GraphQL "products" query as a search parameter. 
+
+```
+query {
+  products(
+    search:"Tank"
+  ) {
+    items {
+      sku
+      name
+  }
+}
+```
+
+#### Filter Configuration
+
+If you want to apply GraphQL filters, you can paste JSON that will be converted into a standard GraphQL filter. 
+
+As example, from 
+
+```
+{
+  "category_id": {
+    "eq": "26"
+  }
+}
+```
+
+to
+
+```
+ query {
+  products(
+    filter: { category_id: { eq: "26" } }
+  ) {
+    items {
+      sku
+      name
+  }
+}
+```
+
+### Scheduling
+
+You can configure how often feed can be updated.
+
+In "Manual" mode, feed will be updated only by clicking "Regenerate Feed"
+
+![Manual mode](./docs/images/feed-schedule-manual.png)
+
+In "By Schedule" mode, feed will be automatically updated at defined time.
+
+![Scheduled mode](./docs/images/feed-schedule-auto.png)
 
 ## Settings
 
@@ -163,7 +225,7 @@ To select a specific element from an array, use the `index` property. This will 
 
 Delete Feed - deleting current feed from the database and from all schedules
 
-Regenerate Feed - will fire event “generate.feed“ for particular feed ID. And this event will triggen and action that will create new feed.
+Regenerate Feed - will trigger the event “generate.feed” for a particular feed ID. This event will initiate an action that creates a new feed.
 
 ### app.config.yaml
 

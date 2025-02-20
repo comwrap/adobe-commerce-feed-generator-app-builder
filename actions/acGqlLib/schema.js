@@ -1,6 +1,5 @@
-const {getIntrospectionQuery, buildClientSchema} = require("graphql");
+const {getIntrospectionQuery} = require("graphql");
 const {errorResponse} = require("./../utils.js");
-const fetch = require('node-fetch')
 
 /**
  * Return GQL schema or throw error
@@ -12,7 +11,7 @@ async function getSchema(params) {
   const gqlUrl = params['mesh_source_url']
 
   const introspectionQuery = getIntrospectionQuery();
-  let tty = JSON.stringify({query: introspectionQuery});
+
   const result = await fetch(gqlUrl, {
     method: 'POST',
     headers: {

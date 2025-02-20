@@ -1,10 +1,4 @@
 import React from 'react'
-import {
-    BrowserRouter as Router,
-    Routes,
-    Route,
-    Link
-} from "react-router-dom"
 
 import PropTypes from 'prop-types';
 import ErrorBoundary from 'react-error-boundary'
@@ -147,7 +141,7 @@ function App(props) {
                 </View>
 
                 <View gridArea="footer" height="size-300" margin="0" paddingX="size-250" paddingY="size-100">
-                    <Footer>&copy; 2023 Feed Generator. All Rights Reserved.</Footer>
+                    <Footer>&copy; 2025 Feed Generator. All Rights Reserved.</Footer>
                 </View>
             </Tabs>
 

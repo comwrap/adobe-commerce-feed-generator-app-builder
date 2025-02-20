@@ -1,6 +1,7 @@
 // use-code-mirror.ts
 import React, {useState, useEffect, useRef} from 'react';
-import {EditorState, EditorView, basicSetup} from '@codemirror/basic-setup';
+import {EditorView, basicSetup} from 'codemirror';
+import { EditorState } from '@codemirror/state';
 import {javascript} from "@codemirror/lang-javascript";
 import {xml} from "@codemirror/lang-xml";
 import {autocompletion, completeFromList} from "@codemirror/autocomplete";
