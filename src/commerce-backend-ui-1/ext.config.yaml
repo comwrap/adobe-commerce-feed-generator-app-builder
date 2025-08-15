@@ -23,8 +23,8 @@ runtimeManifest:
       inputs:
         LOG_LEVEL: debug
         apiKey: $SERVICE_API_KEY
-        MESH_SOURCE_URL: $MESH_SOURCE_URL
-        m-ac-gql-store-code: $AC_DEFAULT_STORE_CODE
+        AC_GRAPHQL_URL: $AC_GRAPHQL_URL
+        store: $AC_DEFAULT_STORE_CODE
         OAUTH_ORG_ID: $OAUTH_ORG_ID
         OAUTH_CLIENT_ID: $OAUTH_CLIENT_ID
         OAUTH_CLIENT_SECRET: $OAUTH_CLIENT_SECRET
@@ -37,7 +37,7 @@ runtimeManifest:
         COMMERCE_ACCESS_TOKEN: $COMMERCE_ACCESS_TOKEN
         COMMERCE_ACCESS_TOKEN_SECRET: $COMMERCE_ACCESS_TOKEN_SECRET
         COMMERCE_HUBSPOT_CONTACT_ID_FIELD: $COMMERCE_HUBSPOT_CONTACT_ID_FIELD
-        MAGENTO_ENVIRONMENT_ID: $MAGENTO_ENVIRONMENT_ID
+        AC_ENVIRONMENT_ID: $AC_ENVIRONMENT_ID
       actions:
         getConfig:
           function: actions/getConfig/index.js

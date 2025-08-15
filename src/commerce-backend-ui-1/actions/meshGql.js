@@ -1,15 +1,15 @@
 async function callMeshGql(gqlRequest, params, variables = {}) {
 
-  const gqlUrl = params['MESH_SOURCE_URL']
+  const gqlUrl = params['AC_GRAPHQL_URL']
   const requestBody = {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'm-ac-gql-store-code': params['store_code'],
-      'magento-environment-id': params['MAGENTO_ENVIRONMENT_ID'],
-      'magento-website-code': params['website_code'],
-      'magento-store-view-code': params['store_code'],
-      'magento-store-code': params['store_group_code'],
+      'store': params['store_code'],
+      'Magento-Environment-Id': params['AC_ENVIRONMENT_ID'],
+      'Magento-Website-Code': params['website_code'],
+      'Magento-Store-View-Code': params['store_code'],
+      'Magento-Store-Code': params['store_group_code'],
       'x-api-key': 'search_gql'
     },
 

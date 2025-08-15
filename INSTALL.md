@@ -17,7 +17,7 @@ To required environment add:
 * I/O Events
 
 
-### Adobe Api Mesh
+### Adobe Api Mesh (Optional)
 
 1. Add "Api Mesh" service to your environment.
 2. Rename file `adobe-api/mesh/mesh.json.dist` into `adobe-api/mesh/mesh.json`.
@@ -39,7 +39,7 @@ To required environment add:
 Set following variables: 
 
 ```
-MESH_SOURCE_URL= // Your Mesh URL 
+AC_GRAPHQL_URL= // Your Mesh URL 
 AC_API_TOKEN= // Adobe Commerce Integration Bearer Token
 AC_DEFAULT_STORE_CODE= // Default Adobe Commerce Store Code
 ```

@@ -5,9 +5,9 @@
         "name": "GraphQL",
         "handler": {
           "graphql": {
-            "endpoint": "MAGENTO-URL/graphql",
+            "endpoint": "AC-URL/graphql",
             "operationHeaders": {
-              "store": "{context.headers['m-ac-gql-store-code']}",
+              "store": "{context.headers['store']}",
               "Content-Type": "application/json"
             }
           }

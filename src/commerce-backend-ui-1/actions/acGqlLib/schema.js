@@ -13,7 +13,7 @@ async function getSchema(params) {
 
   const logger = Core.Logger('main', { level: params.LOG_LEVEL || 'info' })
 
-  const gqlUrl = params['MESH_SOURCE_URL']
+  const gqlUrl = params['AC_GRAPHQL_URL']
 
   logger.error('Debug getSchema')
   logger.error(gqlUrl)
