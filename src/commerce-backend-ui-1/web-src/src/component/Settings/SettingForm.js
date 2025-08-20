@@ -1,22 +1,16 @@
-import React, {useState, useEffect} from 'react'
-import {useTreeData} from 'react-stately';
-import PropTypes from 'prop-types'
+import React from 'react'
 import {
     Button,
     Dialog,
-    DialogTrigger,
     DialogContainer,
     View,
-    ActionButton,
     ButtonGroup,
     Heading,
-    Item, Content, useDialogContainer, ProgressBar, Tabs, TabList, TabPanels
+    Item, Content, ProgressBar, Tabs, TabList, TabPanels
 } from '@adobe/react-spectrum'
 
-
-import SettingIcon from '@spectrum-icons/workflow/Settings'
 import DeleteOutlineIcon from '@spectrum-icons/workflow/DeleteOutline'
-import {ToastContainer, ToastQueue} from '@react-spectrum/toast'
+import {ToastQueue} from '@react-spectrum/toast'
 
 class SettingForm extends React.Component {
     constructor(props) {

@@ -5,8 +5,6 @@ import {
     Heading,
     View
 } from '@adobe/react-spectrum'
-import actions from '../config.json'
-import actionWebInvoke from '../utils'
 import FeedsTable from "./FeedsTable";
 
 class Feeds extends React.Component {

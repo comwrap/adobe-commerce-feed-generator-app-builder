@@ -1,22 +1,26 @@
-import React, {useState, useEffect} from 'react'
+import React from 'react'
 import PropTypes from 'prop-types'
 import {
     View,
     ProgressBar,
     StatusLight,
-    Badge,
     Link,
-    Cell, Column, Row, TableView, TableBody, TableHeader, Tooltip, TooltipTrigger, ActionButton
+    Cell, 
+    Column, 
+    Row, 
+    TableView, 
+    TableBody, 
+    TableHeader, 
+    Tooltip, 
+    TooltipTrigger, 
+    ActionButton
 } from '@adobe/react-spectrum'
 import moment from "moment";
 
-import {actionWebInvoke, getAction, invokeAction} from '../utils'
+import {invokeAction} from '../utils'
 import {FeedActionMenuDialog} from "./FeedActionMenuDialog"
 import InfoOutline from '@spectrum-icons/workflow/InfoOutline'
 import Copy from '@spectrum-icons/workflow/Copy';
-import FeedForm from "./FeedForm";
-
-// import FeedForm from "./FeedForm"
 
 class FeedsTable extends React.Component {
 
@@ -33,32 +37,29 @@ class FeedsTable extends React.Component {
     }
 
     async componentDidMount() {
-        // this.setState({actionInvokeInProgress: true})
-        //
-        // const headers = {}
-        // const params = {}
-        //
-        // // set the authorization header and org from the ims props object
-        // if (this.props.ims.token && !headers.authorization) {
-        //     headers.authorization = 'Bearer ' + this.props.ims.token
-        // }
-        // if (this.props.ims.org && !headers['x-gw-ims-org-id']) {
-        //     headers['x-gw-ims-org-id'] = this.props.ims.org
-        // }
-        // try {
-        //     const actionResponse = await invokeAction('getAllFeeds', headers, params, this.props)
-        //     console.log(`Recent feed action response:`, actionResponse)
-        //
-        //     this.setState({
-        //         feeds: actionResponse,
-        //         actionResponseError: null,
-        //         actionInvokeInProgress: false
-        //     })
-        // } catch (e) {
-        //     console.error(e)
-        //     this.setState({feeds: null, actionResponseError: e.message, actionInvokeInProgress: false})
-        // }
+
         const self = this;
+
+        // Wait for credentials to be available from parent App component
+        const waitForCredentials = () => {
+            return new Promise((resolve) => {
+                const checkCredentials = () => {
+                    if (this.props.ims.token && this.props.ims.org) {
+                        console.log('Credentials available in FeedsTable:', {
+                            token: !!this.props.ims.token,
+                            org: !!this.props.ims.org
+                        });
+                        resolve();
+                    } else {
+                        console.log('Waiting for credentials in FeedsTable...');
+                        setTimeout(checkCredentials, 100);
+                    }
+                };
+                checkCredentials();
+            });
+        };
+
+        await waitForCredentials();
 
         async function fetchData() {
             const feedData = await self.getFeeds();
@@ -72,7 +73,6 @@ class FeedsTable extends React.Component {
     }
 
     async getFeeds() {
-        // this.setState({actionInvokeInProgress: true})
 
         const headers = {}
         const params = {}
@@ -87,12 +87,6 @@ class FeedsTable extends React.Component {
         try {
             const actionResponse = await invokeAction('feed-generator/getAllFeeds', headers, params, this.props)
             console.log(`Recent feed action response:`, actionResponse)
-
-            // ----- for local development start ---------
-            // const feedInformation = await invokeAction(
-            //     'getFeedByUuid', headers, {'uuid':'d36f983d-504f-4266-8062-e59a6ee1e204'}, this.props
-            // )
-            // ----- for local development end ---------
 
             const feedRows = [];
             let i = 1;
@@ -145,14 +139,12 @@ class FeedsTable extends React.Component {
                         'type': feedType,
                         'status': status,
                         'action': '',
-                        // 'error': errorMessage
                         'error': error
                     };
                     feedRows.push(rowData);
                     i = i + 1;
                 }
             });
-            console.log(`feeds rows:`, feedRows);
             return feedRows
         } catch (e) {
             console.error(e)
@@ -219,13 +211,6 @@ class FeedsTable extends React.Component {
                 return <Cell>
                     <View>
                         <Link onPress={() => this.triggerFeedActionDialogState(item['uuid'])}>{item[fieldName]}</Link>
-                        {/*<FeedForm*/}
-                        {/*    reloadFeedsTable={this.reloadFeedsTable}*/}
-                        {/*    feedUuid={item['uuid']}*/}
-                        {/*    isOpen={false}*/}
-                        {/*    setDialog={this.setDialog}*/}
-                        {/*    ims={this.props.ims}*/}
-                        {/*    runtime={this.props.runtime}/>*/}
                     </View>
                     <View paddingTop="size-100">{item['uuid']}</View>
                 </Cell>
@@ -258,11 +243,6 @@ class FeedsTable extends React.Component {
                     variantTxt = "yellow"
                     label = "In Progress"
                 }
-                // if (errorMsg == "") {
-                //     return <Cell>
-                //         <View><StatusLight variant={variantTxt}>{label}</StatusLight></View>
-                //     </Cell>
-                // }
                 return <Cell>
                     <div className="cell status">
                         <View><StatusLight variant={variantTxt}>{label}</StatusLight></View>

@@ -6,12 +6,13 @@ import {
 import actions from '../config.json'
 import actionWebInvoke from '../utils'
 import Welcome from './Welcome'
-// import QuickStart from './QuickStart'
 import RecentFeeds from './RecentFeeds'
+import { attach } from '@adobe/uix-guest'
 
 class Home extends React.Component {
     constructor(props) {
         super(props)
+
         console.log('Home runtime object:', props.runtime)
         console.log('Home ims object:', props.ims)
 
@@ -39,6 +40,12 @@ class Home extends React.Component {
         const headers = {}
         const params = {}
 
+        if (!this.props.ims.token) {
+            const guestConnection = await attach({ id: 'feedGenerator' });
+            this.props.ims.token = guestConnection?.sharedContext?.get('imsToken');
+            this.props.ims.org = guestConnection?.sharedContext?.get('imsOrgId');
+        }
+
         // set the authorization header and org from the ims props object
         if (this.props.ims.token && !headers.authorization) {
             headers.authorization = 'Bearer ' + this.props.ims.token
@@ -46,18 +53,7 @@ class Home extends React.Component {
         if (this.props.ims.org && !headers['x-gw-ims-org-id']) {
             headers['x-gw-ims-org-id'] = this.props.ims.org
         }
-        try {
-            // const actionResponse = await actionWebInvoke(actions['get-profiles'], headers, params)
-            // this.setState({
-            //     profiles: actionResponse.body.content,
-            //     actionResponseError: null,
-            //     actionInvokeInProgress: false
-            // })
-            // console.log(`action response:`, actionResponse)
-        } catch (e) {
-            console.error(e)
-            this.setState({profiles: null, actionResponseError: e.message, actionInvokeInProgress: false})
-        }
+       
     }
 
     // invoke send-promo action by user email
@@ -85,7 +81,6 @@ class Home extends React.Component {
         return (
             <View>
                 <View paddingY="size-250"><Welcome/></View>
-                {/* <View paddingY="size-250"><QuickStart/></View> */}
                 <View paddingY="size-250">
                     <RecentFeeds ims={this.props.ims}
                                  runtime={this.props.runtime}

@@ -1,6 +1,6 @@
 {
   "name": "comwrap-feed-generator",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "private": true,
   "license": "Apache-2.0",
   "author": "Comwrap Reply GmbH",
@@ -48,7 +48,6 @@
     "@babel/preset-env": "^7.24.7",
     "@babel/preset-react": "^7.24.7",
     "@babel/preset-typescript": "^7.24.7",
-    "@openwhisk/wskdebug": "^1.4.0",
     "@tsconfig/node20": "^20.1.4",
     "concurrently": "^9.1.0",
     "follow-redirects": ">=1.15.6",

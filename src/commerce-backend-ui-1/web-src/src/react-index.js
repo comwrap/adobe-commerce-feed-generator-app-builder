@@ -1,4 +1,3 @@
-import regeneratorRuntime from 'regenerator-runtime'
 import Runtime, { init } from '@adobe/exc-app'
 
 import React from "react"
@@ -25,10 +24,6 @@ function bootstrapRaw () {
     const mockRuntime = { on: () => {} }
     const mockIms = {}
     // render the actual react application and pass along the runtime object to make it available to the App
-    // ReactDOM.render(
-    //     <App runtime={mockRuntime} ims={mockIms} />,
-    //     document.getElementById('root')
-    // )
     const root = ReactDOMClient.createRoot(document.getElementById("root"));
     root.render(
         <React.StrictMode>
@@ -41,12 +36,6 @@ function bootstrapInExcShell () {
     // get the Experience Cloud Runtime object
     const runtime = Runtime()
 
-    // use this to set a favicon
-    // runtime.favicon = 'url-to-favicon'
-
-    // use this to respond to clicks on the app-bar title
-    // runtime.heroClick = () => window.alert('Did I ever tell you you\'re my hero?')
-
     // ready event brings in authentication/user info
     runtime.on('ready', ({ imsOrg, imsToken, imsProfile, locale }) => {
         // tell the exc-runtime object we are done
@@ -58,16 +47,9 @@ function bootstrapInExcShell () {
             token: imsToken
         }
 
-        // ReactDOM.render(
-        //     <App runtime={runtime} ims={ims} />,
-        //     document.getElementById('root')
-        // )
-
         const root = ReactDOMClient.createRoot(document.getElementById("root"));
         root.render(
-            // <React.StrictMode>//disabled because cause issue with react-spectrum dropdowns and codemirror
-                <App runtime={runtime} ims={ims} />
-            // </React.StrictMode>
+            <App runtime={runtime} ims={ims} />
         );
     })
 
@@ -79,11 +61,3 @@ function bootstrapInExcShell () {
     }
     runtime.title = 'Cowmrap Feed Generator'
 }
-
-//
-// const root = ReactDOMClient.createRoot(document.getElementById("root"));
-// root.render(
-//     <React.StrictMode>
-//         <App />
-//     </React.StrictMode>
-// );

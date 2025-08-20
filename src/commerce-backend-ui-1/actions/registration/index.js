@@ -1,5 +1,5 @@
 async function main() {
-    const extensionId = 'comwrap-feed-generator'
+    const extensionId = 'feedGenerator'
 
     return {
         statusCode: 200,
@@ -9,12 +9,12 @@ async function main() {
                     {
                         id: `${extensionId}::config`,
                         title: `Configuration`,
-                        parent: `${extensionId}::stock`,
+                        parent: `${extensionId}::feedgenerator`,
                         sortOrder: 1,
                     },
                     {
-                        id: `${extensionId}::stock`,
-                        title: 'Stock',
+                        id: `${extensionId}::feedgenerator`,
+                        title: 'Feed Generator',
                         isSection: true,
                         sortOrder: 100
                     }

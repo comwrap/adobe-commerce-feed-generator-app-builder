@@ -1,6 +1,5 @@
 const { Core } = require('@adobe/aio-sdk')
 const { errorResponse } = require('./../utils.js')
-const { getClient } = require('../oauth1a')
 const { fromParams } = require('../auth')
 
 // main function that will be executed by Adobe I/O Runtime

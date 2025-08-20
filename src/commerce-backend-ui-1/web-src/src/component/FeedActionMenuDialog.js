@@ -1,6 +1,5 @@
-import React, { Component } from "react";
+import { Component } from "react";
 import {
-    useDialogContainer,
     MenuTrigger,
     ActionButton,
     Menu,
@@ -10,7 +9,7 @@ import {
 } from '@adobe/react-spectrum';
 import More from '@spectrum-icons/workflow/More';
 import FeedForm from './FeedForm'
-import {actionWebInvoke, getAction, invokeAction} from '../utils'
+import {invokeAction} from '../utils'
 import {ToastQueue} from "@react-spectrum/toast";
 
 class FeedActionMenuDialog extends Component {
