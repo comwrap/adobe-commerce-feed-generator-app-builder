@@ -1,6 +1,6 @@
 import {useCodeEditor} from "./use-code-editor";
-import {TextArea, View} from '@adobe/react-spectrum';
-import React, {useState, useEffect, useRef} from 'react';
+import {View} from '@adobe/react-spectrum';
+import {useState} from 'react';
 
 function CodeMirror({value, onChange, mode, autocompleteCustomList}) {
     const ref = useCodeEditor({value, onChange, mode, autocompleteCustomList});

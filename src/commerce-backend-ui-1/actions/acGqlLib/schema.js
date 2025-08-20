@@ -1,7 +1,6 @@
 const {getIntrospectionQuery} = require("graphql");
 const {errorResponse} = require("./../utils.js");
 const { Core } = require('@adobe/aio-sdk');
-const { log } = require("react-zlib-js");
 
 /**
  * Return GQL schema or throw error

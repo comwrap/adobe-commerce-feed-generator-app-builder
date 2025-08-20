@@ -1,38 +1,28 @@
-import React, {useState, useEffect} from 'react'
-import {useTreeData} from 'react-stately'
-import PropTypes from 'prop-types'
-import {parse, format} from 'date-fns'
+import React from 'react'
 import {
-    Grid, View, Flex, Header, Content, Heading, Divider, Section, Text,
+    View, Flex, Content, Heading, Divider, Section, Text,
     Button,
-    Dialog, DialogTrigger, DialogContainer, useDialogContainer, AlertDialog,
-    Form, TextField, TextArea, Picker, ListView, CheckboxGroup, Checkbox, ValidationState,
+    Dialog, DialogTrigger, DialogContainer, AlertDialog,
+    Form, TextField, Picker, ListView,
     ButtonGroup, ActionButton,
     Item, Tabs, TabList, TabPanels,
-    ProgressCircle, ProgressBar,
+    ProgressBar,
     TableView, TableHeader, Column, TableBody, Row, Cell,
     Link, StatusLight, Tooltip, TooltipTrigger
 } from '@adobe/react-spectrum'
-import {UNSTYLED} from '@react-spectrum/table';
 import Delete from '@spectrum-icons/workflow/Delete'
 import Refresh from '@spectrum-icons/workflow/Refresh'
 import InfoOutline from '@spectrum-icons/workflow/InfoOutline'
 import CodeEditor from "./CodeEditor"
-import {ToastContainer, ToastQueue} from '@react-spectrum/toast'
+import {ToastQueue} from '@react-spectrum/toast'
 import moment from "moment";
 
 
-import {actionWebInvoke, getAction, invokeAction} from '../utils'
+import {invokeAction} from '../utils'
 import {validateStateAgainstValue, validateFeedForm} from './validators/FormValidator'
-import actions from "../config.json";
 import zlib from 'react-zlib-js/index';
 import buffer from 'react-zlib-js/buffer';
-import DeleteOutlineIcon from "@spectrum-icons/workflow/DeleteOutline";
-
-// import {Picker, Item} from '@react-spectrum/picker'
-
-// import { Button, Dialog, DialogTrigger, DialogContainer } from '@react-spectrum/dialog';
-// import { Form, TextField } from '@react-spectrum/form';
+import { attach } from '@adobe/uix-guest'
 
 class FeedForm extends React.Component {
     static scheduleDaysOptions = [
@@ -106,6 +96,16 @@ class FeedForm extends React.Component {
     async componentDidMount() {
         const self = this;
         let isNew = true;
+
+         if (!this.props.ims.token) {
+            console.log('No IMS token found, attaching to guest connection. FeedForm.js. componentDidMount ...')
+            const guestConnection = await attach({ id: 'feedGenerator' });
+            console.log('Guest connection established FeedForm.js:', guestConnection);
+            this.props.ims.token = guestConnection?.sharedContext?.get('imsToken');
+            console.log('IMS token FeedForm.js:', this.props.ims.token);
+            this.props.ims.org = guestConnection?.sharedContext?.get('imsOrgId');
+            console.log('IMS org FeedForm.js:', this.props.ims.org);
+        }
 
         //load data for existing feed
         if (self.props.feedUuid !== undefined
@@ -219,22 +219,6 @@ class FeedForm extends React.Component {
         try {
             const feedInformation = await invokeAction('feed-generator/getFeedByUuid', headers, params, this.props)
 
-            // -------- for local development start ---------
-            // const feedInformation = {
-            //     'uuid': '111111',
-            //     'value': {
-            //         'feedName': 'Adobe google shop feed example',
-            //         'feedHeader': '<header>header data</header>',
-            //         'feedBody': '<item><sku>{{sku}}</sku></item>',
-            //         'feedFooter': '<footer>footer data</footer>',
-            //         'store_code': 'de',
-            //         'feed_type': 'xml'
-            //     }
-            // };
-            // -------- for local development end ---------
-
-            console.log(`Feed data response:`, feedInformation)
-
             //general
             this.feedNameChange(feedInformation['value']['feedName']);
             this.feedHeaderChange(feedInformation['value']['feedHeader']);
@@ -243,16 +227,6 @@ class FeedForm extends React.Component {
 
             this.storeCodeOnSelectionChange(feedInformation['value']['store_code']);
             this.feedTypeOnSelectionChange(feedInformation['value']['feed_type']);
-            // product type not used for now
-            // var types = [];
-            // var savedProductTypes = feedInformation['value']['productTypes']
-            // if (savedProductTypes !== undefined && typeof savedProductTypes !== 'undefined' && savedProductTypes !== '') {
-            //     savedProductTypes = savedProductTypes.split(",");
-            //     for (var i = 0; i < savedProductTypes.length; i++) {
-            //         types.push(savedProductTypes[i]);
-            //     }
-            // }
-            // this.productTypesChange(types);
 
             //product filtering
             this.feedSearchQueryChange(feedInformation['value']['searchQuery']);
@@ -289,50 +263,6 @@ class FeedForm extends React.Component {
                 }
             }
             this.scheduleTimesOnSelectionChange(times);
-
-//test schedule time calculation function for alarm
-//             if (feedInformation['value'] !== undefined) {
-//                 const scheduleType = feedInformation['value']['schedule_type'];
-//                 if (scheduleType === 'schedule') {
-//                     const days = feedInformation['value']['schedule_days'];
-//                     const times = feedInformation['value']['schedule_times'];
-//                     const scheduledDateTimes = getDateTimes(days, times);
-//                     if (scheduledDateTimes.length > 0) {
-//                         console.log('scheduledDateTimes');
-//                         console.log(scheduledDateTimes);
-//
-//
-//                         const currentDate = new Date();
-//                         const pastDate = new Date(currentDate.getTime() - 30 * 60 * 1000); // 30 minutes into the past
-//                         for (const daytime of scheduledDateTimes) {
-//                             const optionDate = parse(daytime, "eeee h:mm a", new Date());
-//                             if (optionDate >= pastDate && optionDate <= currentDate) {
-//                                 console.log(`Triggering action for "${daytime}".`);
-//                             }
-//                         }
-//                     }
-//                 }
-//             }
-//             function getDateTimes(feedDays,feedTimes) {
-//                 const dateTimes = [];
-//                 if (feedDays !== undefined
-//                     && typeof feedDays !== 'undefined'
-//                     && feedDays !== ''
-//                     && feedTimes !== undefined
-//                     && typeof feedTimes !== 'undefined'
-//                     && feedTimes !== ''
-//                 ) {
-//                     feedDays = feedDays.split(",");
-//                     feedTimes = feedTimes.split(",");
-//                     for (const day of feedDays) {
-//                         for (const time of feedTimes) {
-//                             dateTimes.push(`${day} ${time}`);
-//                         }
-//                     }
-//                 }
-//                 return dateTimes;
-//             }
-//test cron
 
             feedInformation['value']['id'] = feedUuid
 
@@ -407,7 +337,6 @@ class FeedForm extends React.Component {
     }
 
     async getStores() {
-        // this.setState({actionInvokeInProgress: true})
 
         const headers = this.getHeaders();
         const params = {}
@@ -573,33 +502,23 @@ class FeedForm extends React.Component {
     }
 
     async getSubTypesForObject(name, withCategories = true, autocompletionList = []) {
-        const subKeysArray = [];
+
         const gqlSchema = await this.getGqlSchemaData();
 
         const config = await this.getApplicationConfig();
 
-        console.log("gqlSchema", gqlSchema);
+        // console.log("gqlSchema", gqlSchema);
 
         const productType = gqlSchema.data.__schema.types.find(type => type.name === name);
         const productFields = productType.fields;
         const productPossibleTypes = productType.possibleTypes;
 
-        console.log("productFields", productFields);
-        console.log("productPossibleTypes", productPossibleTypes);
+        // console.log("productFields", productFields);
+        // console.log("productPossibleTypes", productPossibleTypes);
 
         // Instead of using the complex subFields extraction, let's build paths directly
         const allPaths = [];
         this.extractAllPaths(productFields, gqlSchema, allPaths);
-
-        // const subFields = {}; 
-        // this.extractSubFields(productFields, gqlSchema, subFields);
-
-        // for (const key in subFields) {
-        //     const nestedKeys = subFields[key].map(item => Object.values(item)[0]);
-        //     nestedKeys.forEach(nestedKey => {
-        //         subKeysArray.push(`${key}.${nestedKey}`);
-        //     });
-        // }
 
         const attributeCodes = this.extractAttributeCodes(productFields, gqlSchema);
         const mergedAttributes = [...attributeCodes, ...allPaths];
@@ -617,9 +536,6 @@ class FeedForm extends React.Component {
                     const typePaths = [];
                     this.extractAllPaths(typeFields.fields, gqlSchema, typePaths);
                 
-                    // const typeSubFields = {};
-                    // this.extractSubFields(typeFields.fields, gqlSchema, typeSubFields);
-                    
                     // Add direct fields with type prefix
                     const typeAttributeCodes = this.extractAttributeCodes(typeFields.fields, gqlSchema);
                     typeAttributeCodes.forEach(fieldName => {
@@ -631,42 +547,12 @@ class FeedForm extends React.Component {
                         mergedAttributes.push(`${typeName}||${path}`);
                     });
 
-                    // // Add nested fields with type prefix
-                    // for (const key in typeSubFields) {
-                    //     const nestedKeys = typeSubFields[key].map(item => Object.values(item)[0]);
-                    //     nestedKeys.forEach(nestedKey => {
-                    //         mergedAttributes.push(`${typeName}||${key}.${nestedKey}`);
-                    //     });
-                    // }
                 }
             }
         }
 
-        console.log("Merged Attributes:", mergedAttributes);
-
         mergedAttributes.sort();
-
         const inputObj = this.createNestedObject(mergedAttributes);
-
-        // if (withCategories && config.ims !== true) {
-        //     const catSubKeysArray = [];
-        //     const catFields = gqlSchema.data.__schema.types.find(type => type.name === "CategoryInterface").fields;
-        //     const catSubFields = {};
-        //     this.extractSubFields(catFields, gqlSchema, catSubFields);
-
-        //     for (const catKey in catSubFields) {
-        //         const catNestedKeys = catSubFields[catKey].map(item => Object.values(item)[0]);
-        //         catNestedKeys.forEach(catNestedKey => {
-        //             catSubKeysArray.push(`${catKey}.${catNestedKey}`);
-        //         });
-        //     }
-
-        //     const catAttributeCodes = this.extractAttributeCodes(catFields, gqlSchema);
-        //     const mergedCatAttributes = [...catAttributeCodes, ...catSubKeysArray];
-        //     mergedCatAttributes.sort();
-
-        //     inputObj['categories'] = this.createNestedObject(mergedCatAttributes);
-        // }
 
         if (withCategories && config.ims !== true) {
             const catFields = gqlSchema.data.__schema.types.find(type => type.name === "CategoryInterface").fields;
@@ -904,10 +790,6 @@ class FeedForm extends React.Component {
             isFieldTypeValid: isFieldTypeValid,
             feedTypeKey: key
         });
-        // this.setState({
-        //     feedTypeName: this.state.feedTypeListFlat[key],
-        //     feedTypeKey: key
-        // });
         this.updateFeedData('feed_type', key);
     }
     scheduleTypeOnSelectionChange = (key) => {
@@ -1006,9 +888,6 @@ class FeedForm extends React.Component {
                 this.setState({saveButtonDisabled: false})
             });
 
-        // this.reloadFeedTable();
-        // this.setState({isOpen: false});
-        // this.handleCancel();
     }
 
     handleCancel() {
@@ -1057,10 +936,6 @@ class FeedForm extends React.Component {
                 feedFooter,
                 storeCodeKey,
                 filterQuery,
-                storeCodeName,
-                productTypes,
-                uuid,
-                feedTypeName,
                 feedTypeKey,
                 scheduleTypeKey,
                 scheduleTimesOptions,
@@ -1072,14 +947,9 @@ class FeedForm extends React.Component {
                 isFieldNameValid,
                 isFieldTypeValid,
                 isFieldStoreValid,
-                meshQueryUrl,
-                meshApiKey,
-                acApiKey,
-                acGqlStoreCode,
             } = this.state;
 
             const columns = [
-                // {name: 'UUID', uid: 'uuid'},
                 {name: 'NAME/UUID', uid: 'name'},
                 {name: 'STORE', uid: 'store_code', width: 100},
                 {name: 'FILE', uid: 'file_path', width: 100},
@@ -1248,23 +1118,8 @@ class FeedForm extends React.Component {
                                                 <Item key="general">General</Item>
                                                 <Item key="filtering">Products Filtering</Item>
                                                 <Item key="schedule">Schedule</Item>
-                                                {/*<Item key="api_settings">API Settings</Item>*/}
                                             </TabList>
                                         </View>
-                                        {/*<Heading marginBottom="0px" level={3}>Feed Info</Heading>*/}
-                                        {/*<Divider marginBottom="10px" />*/}
-                                        {/*<View width="100%">*/}
-                                        {/*    <TextField */}
-                                        {/*                width="100%" */}
-                                        {/*                value={feedName} */}
-                                        {/*                autoFocus */}
-                                        {/*                label="Feed Name" */}
-                                        {/*                isRequired*/}
-                                        {/*                validationState={isFieldNameValid}*/}
-                                        {/*                onChange={this.feedNameChange}/>*/}
-
-                                        {/*</View>*/}
-
                                         <View gridArea="content" width="100%">
                                             <TabPanels>
                                                 <Item key="general">
@@ -1371,20 +1226,6 @@ class FeedForm extends React.Component {
                                                                     </div>
                                                                 </View>
                                                             </View>
-
-                                                            {/*<View direction='column' width='100%'>*/}
-                                                            {/*    <CheckboxGroup*/}
-                                                            {/*        label="Apply to Product Types"*/}
-                                                            {/*        value={productTypes}*/}
-                                                            {/*        onChange={this.productTypesChange}*/}
-                                                            {/*    >*/}
-                                                            {/*        <Checkbox value="simple_product">Simple Products</Checkbox>*/}
-                                                            {/*        <Checkbox value="configurable_product">Configurable Products</Checkbox>*/}
-                                                            {/*        <Checkbox value="bundle_product">Bundle Products</Checkbox>*/}
-                                                            {/*        <Checkbox value="grouped_product">Grouped Products</Checkbox>*/}
-                                                            {/*        <Checkbox value="virtual_product">Virtual Products</Checkbox>*/}
-                                                            {/*    </CheckboxGroup>*/}
-                                                            {/*</View>*/}
                                                         </Form>
                                                     </View>
                                                 </Item>
@@ -1478,58 +1319,6 @@ class FeedForm extends React.Component {
                                                         </Form>
                                                     </View>
                                                 </Item>
-                                                {/*<Item key="api_settings">*/}
-                                                {/*    <Form*/}
-                                                {/*        labelPosition="top"*/}
-                                                {/*    >*/}
-                                                {/*        <Grid*/}
-                                                {/*            areas={[*/}
-                                                {/*                'main info'*/}
-                                                {/*            ]}*/}
-                                                {/*            columns={['size-6000', 'size-6000']}*/}
-                                                {/*            gap="size-500">*/}
-                                                {/*            <View width="100%" gridArea="main">*/}
-                                                {/*                <View width="100%">*/}
-                                                {/*                    <TextField*/}
-                                                {/*                        width="100%"*/}
-                                                {/*                        value={meshQueryUrl}*/}
-                                                {/*                        label="API Mesh - QUERY URL"*/}
-                                                {/*                        onChange={this.meshQueryUrlChangeSetting}/>*/}
-                                                {/*                </View>*/}
-                                                {/*                <View width="100%">*/}
-                                                {/*                    <TextField*/}
-                                                {/*                        width="100%"*/}
-                                                {/*                        value={meshApiKey}*/}
-                                                {/*                        label="API Mesh - API KEY"*/}
-                                                {/*                        onChange={this.meshApiKeyChangeSetting}/>*/}
-                                                {/*                </View>*/}
-                                                {/*                <View width="100%">*/}
-                                                {/*                    <TextField*/}
-                                                {/*                        width="100%"*/}
-                                                {/*                        value={acApiKey}*/}
-                                                {/*                        label="Adobe Commerce - REST API TOKEN"*/}
-                                                {/*                        onChange={this.acApiKeyChangeSetting}/>*/}
-                                                {/*                </View>*/}
-                                                {/*                <View width="100%">*/}
-                                                {/*                    <TextField*/}
-                                                {/*                        width="100%"*/}
-                                                {/*                        value={acGqlStoreCode}*/}
-                                                {/*                        label="Adobe Commerce - GQL DEFAULT STORE CODE"*/}
-                                                {/*                        onChange={this.acGqlStoreCodeChangeSetting}/>*/}
-                                                {/*                </View>*/}
-                                                {/*            </View>*/}
-                                                {/*            /!*<View width="100%" gridArea="info">*!/*/}
-                                                {/*            /!*    <InlineAlert variant="info">*!/*/}
-                                                {/*            /!*        <Header>Help</Header>*!/*/}
-                                                {/*            /!*        <Content>*!/*/}
-                                                {/*            /!*            Parameters are optional. They overwrite API configuration defined in app.config.yaml for this feed.*!/*/}
-                                                {/*            /!*        </Content>*!/*/}
-                                                {/*            /!*    </InlineAlert>*!/*/}
-                                                {/*            /!*</View>*!/*/}
-                                                {/*        </Grid>*/}
-
-                                                {/*    </Form>*/}
-                                                {/*</Item>*/}
                                             </TabPanels>
                                         </View>
                                     </Tabs>

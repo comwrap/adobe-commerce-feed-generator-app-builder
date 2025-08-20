@@ -13,7 +13,7 @@ async function main (params) {
   try {
 
     console.log("called index.js")
-
+ 
     params['payload'] = {"uuid": params.uuid}
 
     // check for missing request input parameters and headers
@@ -27,9 +27,11 @@ async function main (params) {
 
     // extract the user Bearer token from the Authorization header
     const token = getBearerToken(params)
-
+    
     // initialize the client
     const orgId = params.__ow_headers['x-gw-ims-org-id']
+
+
     const eventsClient = await Events.init(orgId, params.apiKey, token)
 
     // Create cloud event for the given payload
@@ -56,7 +58,7 @@ async function main (params) {
     // log any server errors
     logger.error(error)
     // return with 500
-    return errorResponse(500, 'server error', logger)
+    return errorResponse(500, 'server error: ' + error, logger)
   }
 }
 

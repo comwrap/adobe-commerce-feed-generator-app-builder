@@ -12,7 +12,7 @@ runtimeManifest:
         registration:
           function: actions/registration/index.js
           web: 'yes'
-          runtime: 'nodejs:20'
+          runtime: nodejs:22
           inputs:
             LOG_LEVEL: debug
           annotations:
@@ -38,56 +38,55 @@ runtimeManifest:
         COMMERCE_ACCESS_TOKEN_SECRET: $COMMERCE_ACCESS_TOKEN_SECRET
         COMMERCE_HUBSPOT_CONTACT_ID_FIELD: $COMMERCE_HUBSPOT_CONTACT_ID_FIELD
         AC_ENVIRONMENT_ID: $AC_ENVIRONMENT_ID
+        providerId: $FEED_GENERATOR_PROVIDER_ID
+        eventCode: feed.generate
       actions:
         getConfig:
           function: actions/getConfig/index.js
           web: 'yes'
-          runtime: nodejs:20
+          runtime: nodejs:22
           annotations:
             require-adobe-auth: true
             final: true
         saveFeed:
           function: actions/saveFeed/index.js
           web: 'yes'
-          runtime: nodejs:20
+          runtime: nodejs:22
           annotations:
             require-adobe-auth: true
             final: true
         deleteFeed:
           function: actions/deleteFeed/index.js
           web: 'yes'
-          runtime: nodejs:20
+          runtime: nodejs:22
           annotations:
             require-adobe-auth: true
             final: true
         getAllFeeds:
           function: actions/getAllFeeds/index.js
           web: 'yes'
-          runtime: nodejs:20
+          runtime: nodejs:22
           annotations:
             require-adobe-auth: true
             final: true
         getFeedByUuid:
           function: actions/getAllFeeds/getByUuid.js
           web: 'yes'
-          runtime: nodejs:20
+          runtime: nodejs:22
           annotations:
             require-adobe-auth: true
             final: true
         regenerateFeed:
           function: actions/regenerateFeed/index.js
           web: 'yes'
-          runtime: nodejs:20
-          inputs:
-            providerId: $FEED_GENERATOR_PROVIDER_ID
-            eventCode: feed.generate
+          runtime: nodejs:22
           annotations:
             require-adobe-auth: true
             final: true
         processGeneration:
           function: actions/regenerateFeed/generate.js
           web: 'no'
-          runtime: nodejs:20
+          runtime: nodejs:22
           inputs:
             eventCode: feed.generate
           annotations:
@@ -99,21 +98,21 @@ runtimeManifest:
         generateByCron:
           function: actions/regenerateFeed/generateByCron.js
           web: 'no'
-          runtime: nodejs:20
+          runtime: nodejs:22
           annotations:
             require-adobe-auth: true
             final: true
         getAllStores:
           function: actions/magentoActions/getAllStores.js
           web: 'yes'
-          runtime: nodejs:20
+          runtime: nodejs:22
           annotations:
             require-adobe-auth: true
             final: true
         getGqlSchema:
           function: actions/magentoActions/getGqlSchema.js
           web: 'yes'
-          runtime: nodejs:20
+          runtime: nodejs:22
           annotations:
             require-adobe-auth: true
             final: true

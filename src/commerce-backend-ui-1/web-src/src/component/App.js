@@ -1,11 +1,9 @@
 import React from 'react'
 
 import PropTypes from 'prop-types';
-import ErrorBoundary from 'react-error-boundary'
 import {
     Provider,
     defaultTheme,
-    Grid,
     View,
     Header,
     Footer,
@@ -22,11 +20,9 @@ import {
 
 import logo from 'url:../../media/logo.png'
 
-import {ToastContainer, ToastQueue} from '@react-spectrum/toast'
+import {ToastContainer} from '@react-spectrum/toast'
 
 
-// import SideBar from './SideBar'
-// import ActionsForm from './ActionsForm'
 import Home from './Home'
 import Feeds from './Feeds'
 import Docs from './Docs'

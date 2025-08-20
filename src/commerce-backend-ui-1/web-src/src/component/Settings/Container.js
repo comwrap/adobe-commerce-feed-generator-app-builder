@@ -1,8 +1,6 @@
 import React from 'react'
-import PropTypes from 'prop-types'
 import {
     View,
-    ActionButton,
     Button
 } from '@adobe/react-spectrum'
 import SettingIcon from '@spectrum-icons/workflow/Settings'
@@ -25,7 +23,6 @@ class Container extends React.Component {
 
     handleOpenSettings = () => {
         this.setOpen(true);
-        // this.setState({feedFormKey: this.state.feedFormKey + 1});
     }
 
     changeTab = (tabKey) => {
