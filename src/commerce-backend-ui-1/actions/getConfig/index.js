@@ -11,7 +11,7 @@ async function main (params) {
 
   try {
 
-    responseData = {};
+    let responseData = {};
     responseData.ims = false
     if (authParams.ims !== undefined && authParams.ims !== null) {
         responseData.ims = true

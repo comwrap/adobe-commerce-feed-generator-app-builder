@@ -19,25 +19,21 @@ async function callMeshGql(gqlRequest, params, variables = {}) {
     })
   }
   
-  try {
-    const response = await fetch(gqlUrl, requestBody);
-    
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(`HTTP error! status: ${response.status} ${response.statusText}, body: ${errorText}`);
-    }
-    
-    const result = await response.json();
-    
-    if (result.errors) {
-      throw new Error(`failed request to Mesh API. Status: ${response.status} and message: ${JSON.stringify(result.errors)}`)
-    }
-    
-    return result;
-    
-  } catch (error) {
-    throw error;
+  const response = await fetch(gqlUrl, requestBody);
+  
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(`HTTP error! status: ${response.status} ${response.statusText}, body: ${errorText}`);
   }
+  
+  const result = await response.json();
+  
+  if (result.errors) {
+    throw new Error(`failed request to Mesh API. Status: ${response.status} and message: ${JSON.stringify(result.errors)}`)
+  }
+  
+  return result;
+  
 }
 
 module.exports = {
