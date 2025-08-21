@@ -240,12 +240,15 @@ const handleDefault = (placeholder, item, feed, type) => {
   let placeholderParts = dataKey.split(".");
   for (let placeholderPart of placeholderParts) {
 
+    if (value === undefined || value === null) {
+      break;
+    }
+
     if (isDebug === true) {
       logger.error("value before every loop " + JSON.stringify(value));    
     }
 
     if (value.toString() === "") { 
-
       if (isDebug === true) {
         logger.error("item[placeholderPart] " + JSON.stringify(item[placeholderPart]));    
       }
