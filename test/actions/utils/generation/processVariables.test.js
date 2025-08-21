@@ -1,6 +1,5 @@
 const { Core } = require('@adobe/aio-sdk');
-const bwipjs = require('bwip-js');
-const { processVariables } = require('./../../../../actions/utils/generation/processVariables.js');
+const { processVariables } = require('./../../../../src/commerce-backend-ui-1/actions/utils/generation/processVariables.js');
 
 jest.mock('@adobe/aio-sdk', () => ({
   Core: {
@@ -23,10 +22,6 @@ beforeEach(() => {
   mockLoggerInstance.debug.mockReset();
   mockLoggerInstance.error.mockReset();
 });
-
-const params = {
-  value: 'test'
-};
 
 describe('processVariables', () => {
 

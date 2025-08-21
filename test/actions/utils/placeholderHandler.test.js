@@ -1,6 +1,5 @@
 const { Core } = require('@adobe/aio-sdk');
-const bwipjs = require('bwip-js');
-const { handlePlaceholder, wrapInCDATAIfNeeded } = require('./../../../actions/utils/placeholderHandler.js');
+const { handlePlaceholder, wrapInCDATAIfNeeded } = require('./../../../src/commerce-backend-ui-1/actions/utils/placeholderHandler.js');
 
 jest.mock('@adobe/aio-sdk', () => ({
   Core: {
@@ -23,10 +22,6 @@ beforeEach(() => {
   mockLoggerInstance.debug.mockReset();
   mockLoggerInstance.error.mockReset();
 });
-
-const params = {
-  value: 'test'
-};
 
 describe('placeholderHandler', () => {
 

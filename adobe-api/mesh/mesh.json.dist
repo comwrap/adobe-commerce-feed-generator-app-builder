@@ -2,29 +2,20 @@
   "meshConfig": {
     "sources": [
       {
-        "name": "REST",
-        "handler": {
-          "openapi": {
-            "source": "MAGENTO-URL/rest/schema?services=storeStoreRepositoryV1,storeGroupRepositoryV1,storeWebsiteRepositoryV1",
-            "schemaHeaders": {
-              "Authorization": "Bearer MAGENTO-TOKEN"
-            },
-            "operationHeaders": {
-              "Authorization": "Bearer {context.headers['m-ac-rest-api-token']}",
-              "Content-Type": "application/json"
-            },
-            "includeHttpDetails": true
-          }
-        }
-      },
-      {
         "name": "GraphQL",
         "handler": {
           "graphql": {
-            "endpoint": "MAGENTO-URL/graphql",
+            "endpoint": "AC-URL/graphql",
             "operationHeaders": {
-              "store": "{context.headers['m-ac-gql-store-code']}",
-              "Content-Type": "application/json"
+              "Content-Type": "application/json",
+              "Magento-Environment-Id": "{context.headers['Magento-Environment-Id']}",
+              "Magento-Website-Code": "{context.headers['Magento-Website-Code']}",
+              "Magento-Store-View-Code": "{context.headers['Magento-Store-View-Code']}",
+              "Magento-Store-Code": "{context.headers['Magento-Store-Code']}",
+              "Magento-Customer-Group": "{context.headers['Magento-Customer-Group']}",
+              "x-api-key": "{context.headers['x-api-key']}",
+              "Authorization": "{context.headers['Authorization']}",
+              "store": "{context.headers['store']}"
             }
           }
         }

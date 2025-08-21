@@ -1,6 +1,8 @@
 {
-  "name": "Feed Generator",
-  "id": "comwrap-feed-generator",
+  "name": "feedGenerator",
+  "id": "feedGenerator",
   "description": "Feed Generator - Extension that allow to create different product feed files from Adobe Commerce products",
-  "version": "1.0.0"
+  "displayName": "Feed Generator - Extension that allow to create different product feed files from Adobe Commerce products",
+  "version": "2.0.0",
+  "platform": "web"
 }

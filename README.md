@@ -4,6 +4,8 @@ Feed Generator is a service that simplifies the process of generating product fe
 
 ## Installation
 
+Module compartible with both Adobe Commerce SaaS and PaaS.
+
 Please see [INSTALL.md](INSTALL.md) for more details.
 
 ## Home page / Grid
@@ -97,8 +99,24 @@ Based on this GQL schema you can use the following variables (starting inside of
 * {{description.html}}
 * {{price_range.minimum_price.regular_price.value}}
 * {{price_range.minimum_price.regular_price.currency}}
+* {{SimpleProduct||weight}}
 
-… and so on depends on a schema used
+SimpleProduct||** definition will be decoded like: 
+
+```graphql
+  products(search: "Motiv") {
+    items {
+      ... on SimpleProduct {
+        weight
+      }
+    }
+  }
+```
+
+… and so on depends on a schema used.
+
+[!NOTE]
+In case you do not see some fields in autocompletion, it may be because your Schema has some custom or complex attributes. You can always enter them manually, and we would be happy to hear from you to add them to a future release.
 
 ### Filtering
 
@@ -179,7 +197,7 @@ Header and Footer currently have a support to variables (Only 1 actualy)
 
 ### Dynamic variables
 
-Variables are defined using double curly braces (`{{ }}`) and correspond to fields in the Magento GraphQL product output. For example, `{{sku}}` will be replaced with the product's SKU.
+Variables are defined using double curly braces (`{{ }}`) and correspond to fields in the Adobe Commerce GraphQL product output. For example, `{{sku}}` will be replaced with the product's SKU.
 
 ##### Additonal parameters
 
@@ -188,7 +206,7 @@ Variables are defined using double curly braces (`{{ }}`) and correspond to fiel
 When a variable corresponds to an array, you can use the `count` property to repeat the XML tag for each element in the array. For instance, using `count=5` will generate up to 5 tags, each containing a different value from the array.
 
 ```xml
-<g:brand count=5>{{manufacturer}}</g:brand>
+<g:brand>{{manufacturer count="5"}}</g:brand>
 ```
 
 ##### Selecting Specific Array Elements with `index`
@@ -196,8 +214,17 @@ When a variable corresponds to an array, you can use the `count` property to rep
 To select a specific element from an array, use the `index` property. This will generate a single tag with the value of the specified element from the array.
 
 ```xml
-<g:product_type index=2>{{categories.name}}</g:product_type>
+<g:product_type>{{categories.name index="2"}}</g:product_type>
 ```
+
+##### Selecting Attribute with Specific code
+
+```xml
+<color>{{attributes.value code='color'}}</color>
+```
+
+Add attributes.value is an Array of attributes, to get specific attribute, you can use "code" parameter and define attribute with which code you want to use.
+
 
 #### Example 
 
@@ -254,11 +281,13 @@ Regenerate Feed - will trigger the event “generate.feed” for a particular fe
 
   Action will be invoked when `feed.generate` event added.
 
-* `getGqlSchema` - retrieve graphql schema from target magento app.
+* `getGqlSchema` - retrieve graphql schema from target Adobe Commerce.
 
-* `getAllStores` - get all Magento stores by API
+* `getAllStores` - get all Adobe Commerce Stores by API
 
 * `generateByCron` - trigger feed generation by OpenWisk alarms. 
+
+* `getConfig` - receive public module configs. Currently only return type of authorization (ims vs oauth). 
 
 Action is running every 30 minutes and checking by feed settings if it have to be regenerate. Process regeneration if necessary.
 
@@ -281,7 +310,7 @@ Action is running every 30 minutes and checking by feed settings if it have to b
   * Feed Item: Big text field to have XML | JSON there with feed item body
   * Feed Header
   * Feed Footer
-  * Store View - select with list of available store views on Magento (websites also have to be there, but it is not possible to select them)
+  * Store View - select with list of available store views on Adobe Commerce (websites also have to be there, but it is not possible to select them)
   
   After saving the form, it saved into key/value storage and user have to be redirected to dashboard. Success message have to be shown there.
 

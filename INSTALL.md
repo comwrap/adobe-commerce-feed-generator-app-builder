@@ -17,15 +17,12 @@ To required environment add:
 * I/O Events
 
 
-### Adobe Api Mesh
+### Adobe Api Mesh (Optional)
 
 1. Add "Api Mesh" service to your environment.
 2. Rename file `adobe-api/mesh/mesh.json.dist` into `adobe-api/mesh/mesh.json`.
 3. Change required options inside `adobe-api/mesh/mesh.json`.
-    * MAGENTO-URL (This should be your Adobe Commerce system's base URL.)
-    * MAGENTO-TOKEN 
-
-    You can obtain the token by following these [steps](https://experienceleague.adobe.com/en/docs/commerce-admin/systems/integrations). Copy the Access Token value once generated. Additionally, you need to enable the "[Integration Token](https://experienceleague.adobe.com/en/docs/commerce-admin/systems/integrations)" functionality if it is not enabled yet. The generated token does not expire, but it can be updated if necessary.
+    * AC-URL (This should be your Adobe Commerce system's base URL to GQL Endpoint)
 
 3. Provision Mesh by using this file with `aio api-mesh create adobe-api/mesh/mesh.json`.
 
@@ -39,19 +36,47 @@ To required environment add:
 Set following variables: 
 
 ```
-MESH_SOURCE_URL= // Your Mesh URL 
-AC_API_TOKEN= // Adobe Commerce Integration Bearer Token
+AC_GRAPHQL_URL= // Your GraphQL URL 
 AC_DEFAULT_STORE_CODE= // Default Adobe Commerce Store Code
+AC_ENVIRONMENT_ID= // Your Environment ID for Catalog Service if used (optional)
 ```
 
-6. Create Event Provider for Feed Generator. Run `aio event provider create` and define name. Copy `id` from output.
+6. Configure Adobe Commerce Authorization
+
+In env.dist file you will find set of Auth parameters.
+
+**For Adobe Commerce PaaS:**
+
+These values can be copied from the Integration Details under System > Integrations in your Adobe Commerce backend
+
+```
+COMMERCE_CONSUMER_KEY=
+COMMERCE_CONSUMER_SECRET=
+COMMERCE_ACCESS_TOKEN=
+COMMERCE_ACCESS_TOKEN_SECRET=
+```
+
+**For Adobe Commerce SaaS:**
+
+Documentation how to get these values is available here: https://developer.adobe.com/developer-console/docs/guides/authentication/ServerToServerAuthentication/implementation
+
+```
+OAUTH_CLIENT_ID=
+OAUTH_CLIENT_SECRET=
+OAUTH_TECHNICAL_ACCOUNT_ID=
+OAUTH_TECHNICAL_ACCOUNT_EMAIL=
+OAUTH_ORG_ID=
+OAUTH_SCOPES=AdobeID, openid, read_organizations, additional_info.projectedProductContext, additional_info.roles, adobeio_api, read_client_secret, manage_client_secrets, event_receiver_api
+```
+
+7. Create Event Provider for Feed Generator. Run `aio event provider create` and define name. Copy `id` from output.
 Add to `.env` line `FEED_GENERATOR_PROVIDER_ID=<id>`
 
-7. Create Event Metadata for Feed Generator. Run `aio event eventmetadata create PROVIDERID`. Define event code as `feed.generate` and define description as `Generate Feed`.
+8. Create Event Metadata for Feed Generator. Run `aio event eventmetadata create PROVIDERID`. Define event code as `feed.generate` and define description as `Generate Feed`.
 
-8. Run `aio app deploy` to deploy the app.
+9. Run `aio app deploy` to deploy the app.
 
-9. Go To your application environment via Browser. Click on "Add Service" -> Event -> 3rd Party Custom Events -> And select your provider and event subscription. In Receiver define "Runtime action" as `processGeneration` action.
+10. Go To your application environment via Browser. Click on "Add Service" -> Event -> 3rd Party Custom Events -> And select your provider and event subscription. In Receiver define "Runtime action" as `processGeneration` action.
 
-10. The app is ready to use. Please save the link to your application environment. Additionally, you can replicate all steps in your production environment and publish the application, so it will be available on your exchange dashboard.
+11. The app is ready to use. Please save the link to your application environment. Additionally, you can replicate all steps in your production environment and publish the application, so it will be available on your exchange dashboard.
 
