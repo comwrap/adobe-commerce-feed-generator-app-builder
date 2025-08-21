@@ -10,7 +10,6 @@ async function main (params) {
 
   try {
 
-    logger.info('Debug getGqlSchema')
     let schema = await getSchema(params)
     const responseData = JSON.stringify(schema)
 

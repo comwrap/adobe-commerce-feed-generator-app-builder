@@ -197,7 +197,7 @@ Header and Footer currently have a support to variables (Only 1 actualy)
 
 ### Dynamic variables
 
-Variables are defined using double curly braces (`{{ }}`) and correspond to fields in the Magento GraphQL product output. For example, `{{sku}}` will be replaced with the product's SKU.
+Variables are defined using double curly braces (`{{ }}`) and correspond to fields in the Adobe Commerce GraphQL product output. For example, `{{sku}}` will be replaced with the product's SKU.
 
 ##### Additonal parameters
 
@@ -281,9 +281,9 @@ Regenerate Feed - will trigger the event “generate.feed” for a particular fe
 
   Action will be invoked when `feed.generate` event added.
 
-* `getGqlSchema` - retrieve graphql schema from target magento app.
+* `getGqlSchema` - retrieve graphql schema from target Adobe Commerce.
 
-* `getAllStores` - get all Magento stores by API
+* `getAllStores` - get all Adobe Commerce Stores by API
 
 * `generateByCron` - trigger feed generation by OpenWisk alarms. 
 
@@ -310,7 +310,7 @@ Action is running every 30 minutes and checking by feed settings if it have to b
   * Feed Item: Big text field to have XML | JSON there with feed item body
   * Feed Header
   * Feed Footer
-  * Store View - select with list of available store views on Magento (websites also have to be there, but it is not possible to select them)
+  * Store View - select with list of available store views on Adobe Commerce (websites also have to be there, but it is not possible to select them)
   
   After saving the form, it saved into key/value storage and user have to be redirected to dashboard. Success message have to be shown there.
 

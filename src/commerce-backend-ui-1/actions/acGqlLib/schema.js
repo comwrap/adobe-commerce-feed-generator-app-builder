@@ -1,7 +1,5 @@
 const {getIntrospectionQuery} = require("graphql");
 const {errorResponse} = require("./../utils.js");
-const { Core } = require('@adobe/aio-sdk');
-
 /**
  * Return GQL schema or throw error
  *
@@ -10,15 +8,8 @@ const { Core } = require('@adobe/aio-sdk');
  */
 async function getSchema(params) {
 
-  const logger = Core.Logger('main', { level: params.LOG_LEVEL || 'info' })
-
   const gqlUrl = params['AC_GRAPHQL_URL']
-
-  logger.error('Debug getSchema')
-  logger.error(gqlUrl)
   const introspectionQuery = getIntrospectionQuery();
-
-  logger.error(introspectionQuery)
 
   const result = await fetch(gqlUrl, {
     method: 'POST',
