@@ -174,13 +174,24 @@ class FeedForm extends React.Component {
     async fetchData(isNew) {
         // trick to remove feed by uuid if feedlist not loads because of corrupted data
         // this.deleteFeedByUuid("01018dcf-2d90-44a0-8f0c-d0a90e85aee5");
+
+        const config = await this.getApplicationConfig();
+        let stores, listObject, feed; // Declare variables outside the blocks
+
         if (isNew === true) {
             console.log('fetch data for "New feed"');
 
-            const [stores, listObject] = await Promise.all([
-                this.getStores(),
-                this.getSubTypesForObject("ProductView")
-            ])
+            if (config.ims !== true){
+                [stores, listObject] = await Promise.all([
+                    this.getStores(),
+                    this.getSubTypesForObject("ProductInterface")
+                ])
+            } else {
+                [stores, listObject] = await Promise.all([
+                    this.getStores(),
+                    this.getSubTypesForObject("ProductView")
+                ])
+            }
             this.setState({
                 autocompleteList: listObject
             });
@@ -188,11 +199,20 @@ class FeedForm extends React.Component {
         }
 
         console.log('fetch data for "Existing feed"');
-        const [stores, listObject, feed] = await Promise.all([
-            this.getStores(),
-            this.getSubTypesForObject("ProductView"),
-            this.getFeedByUuid(this.props.feedUuid)
-        ])
+
+        if (config.ims !== true){
+            [stores, listObject, feed] = await Promise.all([
+                this.getStores(),
+                this.getSubTypesForObject("ProductInterface"),
+                this.getFeedByUuid(this.props.feedUuid)
+            ])
+        } else {
+            [stores, listObject, feed] = await Promise.all([
+                this.getStores(),
+                this.getSubTypesForObject("ProductView"),
+                this.getFeedByUuid(this.props.feedUuid)
+            ])
+        }
         this.setState({
             autocompleteList: listObject
         });

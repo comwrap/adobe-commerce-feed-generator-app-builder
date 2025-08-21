@@ -44,13 +44,13 @@
     "@babel/preset-react": "^7.24.7",
     "@babel/preset-typescript": "^7.24.7",
     "@tsconfig/node20": "^20.1.4",
+    "bwip-js": "^4.7.0",
     "concurrently": "^9.1.0",
     "follow-redirects": "^1.15.11",
     "jest": "^30.0.5",
     "nock": "^14.0.10",
     "stdout-stderr": "^0.1.13",
-    "typescript": "^5.9.2",
-    "bwip-js": "^4.7.0"
+    "typescript": "^5.9.2"
   },
   "scripts": {
     "test": "jest --passWithNoTests ./test",
