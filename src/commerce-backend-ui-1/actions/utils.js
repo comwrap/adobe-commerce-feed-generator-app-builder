@@ -1,7 +1,3 @@
-/* 
-* <license header>
-*/
-
 /* This file exposes some common utilities for your actions */
 
 const { handlePlaceholder } = require('./utils/placeholderHandler');

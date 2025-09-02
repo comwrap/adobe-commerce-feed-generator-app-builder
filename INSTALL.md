@@ -9,7 +9,7 @@
 
 ### Create a new project
 
-Go to console.adobe.io and create a new project from template: "App Builder"
+Go to https://developer.adobe.com/console and create a new project from template: "App Builder"
 
 To required environment add: 
 
@@ -17,20 +17,21 @@ To required environment add:
 * I/O Events
 
 
-### Adobe Api Mesh (Optional)
+### Adobe API Mesh (Optional)
 
-1. Add "Api Mesh" service to your environment.
+1. Add "API Mesh" service to your environment.
 2. Rename file `adobe-api/mesh/mesh.json.dist` into `adobe-api/mesh/mesh.json`.
 3. Change required options inside `adobe-api/mesh/mesh.json`.
     * AC-URL (This should be your Adobe Commerce system's base URL to GQL Endpoint)
 
-3. Provision Mesh by using this file with `aio api-mesh create adobe-api/mesh/mesh.json`.
+4. Provision Mesh by using this file with `aio api-mesh create adobe-api/mesh/mesh.json`.
 
 ## Installation
 
 1. Clone the repository
 2. Run `npm install` to install the dependencies
 3. Go to [Project](https://developer.adobe.com/console), select Environment and click on "Download All" button.
+4. Copy the env.dist file into .env file. `cp env.dist .env`
 4. Execute `aio app use <path-to-file>` with file you just downloaded. (Merge files if you already have .env file)
 5. Edit `.env` file with your project details.
 Set following variables: 
@@ -39,7 +40,24 @@ Set following variables:
 AC_GRAPHQL_URL= // Your GraphQL URL 
 AC_DEFAULT_STORE_CODE= // Default Adobe Commerce Store Code
 AC_ENVIRONMENT_ID= // Your Environment ID for Catalog Service if used (optional)
+COMMERCE_BASE_URL= // Commerce instance REST API Url
 ```
+
+> [!NOTE]
+> When configuring the `COMMERCE_BASE_URL` environment variable, the format differs between PaaS and SaaS:
+>
+> For PaaS (On-Premise/Cloud):
+>
+> - Must include your base site URL + `/rest/` suffix
+> - Example: `https://[environment-name].us-4.magentosite.cloud/rest/`
+>
+> For SaaS:
+>
+> - Must be the REST API endpoint provided by Adobe Commerce
+> - Example: `https://na1-sandbox.api.commerce.adobe.com/[tenant-id]/`
+>
+> Make sure to use your actual environment name or tenant ID in the URL. The examples above use placeholder values.
+
 
 6. Configure Adobe Commerce Authorization
 

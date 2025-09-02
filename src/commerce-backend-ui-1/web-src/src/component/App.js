@@ -83,27 +83,16 @@ function App(props) {
 
                             <View gridArea="header-nav" width="size-5000" height="size-400">
                                 <Flex direction="row"  gap="size-100" justifyContent="center">
-                                    {/*<Router>*/}
-                                    {/*    <Link to="/">Home</Link>*/}
-                                    {/*    <Link to="/feeds">Feeds</Link>*/}
-                                    {/*    <Link to="/about">About</Link>*/}
                                         <TabList>
                                             <Item key="home">Home</Item>
                                             <Item key="feeds">Feeds</Item>
                                             <Item key="docs">Docs</Item>
                                         </TabList>
-                                    {/*<Routes>*/}
-                                    {/*    /!*<Route exact path="/"><Home/></Route>*!/*/}
-                                    {/*    <Route path="/feeds" element={<Feeds />}></Route>*/}
-                                    {/*    <Route path="/about" element={<About />}></Route>*/}
-                                    {/*</Routes>*/}
-                                    {/*</Router>*/}
                                 </Flex>
                             </View>
 
                             <View gridArea="header-button" width="size-5000" height="size-400">
                                 <Flex direction="row" justifyContent="right">
-                                    {/*<Button variant="accent">Create New Feed</Button>*/}
 
                                     <Button variant="accent" onPress={handleCreateFeedClick}>
                                         Create new feed

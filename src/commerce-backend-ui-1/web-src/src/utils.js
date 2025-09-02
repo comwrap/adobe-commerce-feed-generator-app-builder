@@ -1,7 +1,3 @@
-/* 
-* <license header>
-*/
-
 /* global fetch */
 import actions from './config.json'
 

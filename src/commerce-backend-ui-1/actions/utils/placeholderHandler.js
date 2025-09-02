@@ -106,12 +106,8 @@ const handleNoProperties = (placeholder, item, feed, type) => {
 
 const handleCategories = (placeholder, item, feed, type) => {
   
-  // const logger = Core.Logger('main', {level: 'info'})
-
   // eslint-disable-next-line no-unused-vars
   const [dataKey, placeholderProperties] = extractFromPlaceholder(placeholder);
-
-  // logger.error("handleCategories START");
 
   let placeholderParts = dataKey.split(".");
 
@@ -119,21 +115,14 @@ const handleCategories = (placeholder, item, feed, type) => {
     return null;
   }
 
-  // logger.error("item " + JSON.stringify(item));
-  // logger.error("placeholderParts " + JSON.stringify(placeholderParts));
-  // logger.error("placeholderParts0 " + JSON.stringify(placeholderParts[0]));
-
   let value = "";
   let itemCounter = 0;
   for (let placeholderPart of placeholderParts) {
 
-    // logger.error("placeholderPart " + JSON.stringify(placeholderPart));
     if (value.toString() === "") { 
 
-      // logger.error("item[placeholderPart] " + JSON.stringify(item[placeholderPart]));
       if (itemCounter === 0) {
 
-        // logger.error("item[placeholderPart] VALUE " + JSON.stringify(item[placeholderPart][0]));
         /**
          * @ToDo Consider to use index as a property for define position of the value in the array if there are multiple values
          * Example: 
@@ -152,12 +141,9 @@ const handleCategories = (placeholder, item, feed, type) => {
           value = item[placeholderPart][0];
         // }
       } else {
-        // logger.error("item[placeholderPart] VALUE itemCounter > 0" + JSON.stringify(item[placeholderPart]));
         value = item[placeholderPart]  
       }
     } else { 
-      // logger.error("value[placeholderPart] " + JSON.stringify(value[placeholderPart]));
-      // logger.error("value " + JSON.stringify(value));
       value = value[placeholderPart];
     }
     itemCounter++;

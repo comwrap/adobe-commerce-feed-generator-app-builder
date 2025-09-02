@@ -42,16 +42,16 @@ async function generateFeed(uuid, params) {
                 "expiration": "2023-03-03T12:58:47.000Z",
                 "value": {
                     "created_at": "2023-03-02T12:58:47.770Z",
-                    "feedBody": "<item>\n  <g:id>{{sku}}</g:id>\n  <title>{{name}}</title>\n  <description>{{description}}</description>\n <g:image_link>{{images.url count='2'}}</g:image_link>\n <price>{{SimpleProductView||price.final.amount.value}} {{SimpleProductView||price.final.amount.currency}}</price>\n  <weight>{{attributes.value code='weight'}}</weight>\n </item>",
+                    "feedBody": "<item>\n  <g:id>{{sku}}</g:id>\n  <title>{{SimpleProduct||weight}}</title>\n  \n <g:image_link>{{image.url count='2'}}</g:image_link>\n </item>",
                     "feedFooter": "</items>",
                     "feedHeader": "<items>",
                     "feedName": "Test XML",
                     "feed_type": "xml",
                     "generated_at": "",
                     "status": "pending",
-                    "store_code": "default||main_website_store||base",
-                    "searchQuery": "basebal",
-                    "filterQuery": "{\n   \"attribute\": \"price\",\n   \"range\": {\n     \"from\": 10,\n     \"to\": 100\n   }\n}"
+                    "store_code": "de||main_website_store||base",
+                    "searchQuery": "Motiv",
+//                    "filterQuery": "{\n   \"attribute\": \"price\",\n   \"range\": {\n     \"from\": 10,\n     \"to\": 100\n   }\n}"
                 }
             }
         }

@@ -4,7 +4,7 @@ Feed Generator is a service that simplifies the process of generating product fe
 
 ## Installation
 
-Module compartible with both Adobe Commerce SaaS and PaaS.
+Module compatible with both Adobe Commerce SaaS and PaaS.
 
 Please see [INSTALL.md](INSTALL.md) for more details.
 
@@ -191,7 +191,7 @@ For that go to Settings and click on clean the cache button.
 
 #### Fixed Variables
 
-Header and Footer currently have a support to variables (Only 1 actualy)
+Header and Footer currently have a support to variables (Only 1 actually)
 
 `{{DATA}}` - Current Date/Time - will be in format 2024-10-21T14:45:30.123Z
 
@@ -199,14 +199,14 @@ Header and Footer currently have a support to variables (Only 1 actualy)
 
 Variables are defined using double curly braces (`{{ }}`) and correspond to fields in the Adobe Commerce GraphQL product output. For example, `{{sku}}` will be replaced with the product's SKU.
 
-##### Additonal parameters
+##### Additional parameters
 
 ###### Repeating Tags with `count`
 
 When a variable corresponds to an array, you can use the `count` property to repeat the XML tag for each element in the array. For instance, using `count=5` will generate up to 5 tags, each containing a different value from the array.
 
 ```xml
-<g:brand>{{manufacturer count="5"}}</g:brand>
+<image>{{media_gallery.url count="2"}}</image>
 ```
 
 ##### Selecting Specific Array Elements with `index`
@@ -226,27 +226,50 @@ To select a specific element from an array, use the `index` property. This will 
 Add attributes.value is an Array of attributes, to get specific attribute, you can use "code" parameter and define attribute with which code you want to use.
 
 
-#### Example 
+#### Example for Google Feed
+
+##### Header
+```xml
+<?xml version="1.0"?>
+<rss xmlns:g="http://base.google.com/ns/1.0" version="2.0">
+<channel>
+```
+
+##### Body (PaaS)
 
 ```xml
 <item>
   <g:id>{{sku}}</g:id>
   <title>{{name}}</title>
   <description>{{description.html}}</description>
-  <link>https://www.native-instruments.com/{{detail_page}}</link>
+  <link>https://www.URL.com/{{detail_page}}</link>
   <g:image_link>{{image.url}}</g:image_link>
   <g:condition>new</g:condition>
   <g:price>{{price_range.maximum_price.final_price.value}} {{price_range.maximum_price.final_price.currency}}</g:price>
-  <g:availability>In Stock</g:availability>
-  <g:google_product_category><![CDATA[Arts &amp; Entertainment &gt; Hobbies &amp; Creative Arts &gt; Musical Instruments &gt; Electronic Musical Instruments]]></g:google_product_category>
-  <g:identifier_exists>true</g:identifier_exists>
   <g:product_type index=2>{{categories.name}}</g:product_type>
-  <g:sale_price>{{price_range.minimum_price.final_price.value}}</g:sale_price>
-  <g:brand count=5>{{manufacturer}}</g:brand>
   <g:mpn>{{sku}}</g:mpn>
   <g:additional_image_link><![CDATA[{{image.url}}?width=350&height=350&fit=crop]]></g:additional_image_link>
 </item>
 ```
+
+
+##### Body (SaaS)
+```xml
+<item>
+  <sku>{{sku}}</sku>
+  <weight>{{SimpleProduct||weight}}</weight>
+  <image>{{media_gallery.url count="2"}}</image>
+  <color>{{attributes.value code='color'}}</color>
+  <price>{{SimpleProduct||price_range.maximum_price.final_price.value}}</price>
+</item>
+```
+
+##### Footer
+```xml
+</channel>
+</rss>
+```
+
 
 ## Technical Module implementation
 
@@ -285,7 +308,7 @@ Regenerate Feed - will trigger the event “generate.feed” for a particular fe
 
 * `getAllStores` - get all Adobe Commerce Stores by API
 
-* `generateByCron` - trigger feed generation by OpenWisk alarms. 
+* `generateByCron` - trigger feed generation by OpenWhisk alarms. 
 
 * `getConfig` - receive public module configs. Currently only return type of authorization (ims vs oauth). 
 
@@ -306,8 +329,8 @@ Action is running every 30 minutes and checking by feed settings if it have to b
   Edit / Create New Feed form will contain form to save new Feed.
 
   Current elements: 
-  * Feed Format - select - JSON | XML
-  * Feed Item: Big text field to have XML | JSON there with feed item body
+  * Feed Format - select - XML
+  * Feed Item: Big text field to have XML there with feed item body
   * Feed Header
   * Feed Footer
   * Store View - select with list of available store views on Adobe Commerce (websites also have to be there, but it is not possible to select them)

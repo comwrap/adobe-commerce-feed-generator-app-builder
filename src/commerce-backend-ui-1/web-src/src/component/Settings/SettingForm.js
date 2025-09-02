@@ -67,13 +67,9 @@ class SettingForm extends React.Component {
                         <Content>
                             <Tabs>
                                 <TabList>
-                                    {/*<Item key="gql">GraphQL</Item>*/}
-                                    {/*<Item key="stores">Store View</Item>*/}
                                     <Item key="cache">Cache</Item>
                                 </TabList>
                                 <TabPanels>
-                                    {/*<Item key="gql"><View>gql</View></Item>*/}
-                                    {/*<Item key="stores"><View>stores</View></Item>*/}
                                     <Item key="cache">
                                         <View gridArea='content' paddingY='size-200'>
                                             <ButtonGroup>

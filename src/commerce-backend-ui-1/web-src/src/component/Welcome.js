@@ -6,10 +6,6 @@ import {
 } from '@adobe/react-spectrum'
 
 class Welcome extends React.Component {
-    constructor (props) {
-        super(props)
-    }
-
     render () {
         return (
             <View backgroundColor="gray-50" borderColor="gray-300" borderRadius="medium" borderWidth="thin" width="100%" paddingY="size-100" paddingX="size-250">

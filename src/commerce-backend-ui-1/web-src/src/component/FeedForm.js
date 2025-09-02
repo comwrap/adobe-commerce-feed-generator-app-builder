@@ -527,14 +527,9 @@ class FeedForm extends React.Component {
 
         const config = await this.getApplicationConfig();
 
-        // console.log("gqlSchema", gqlSchema);
-
         const productType = gqlSchema.data.__schema.types.find(type => type.name === name);
         const productFields = productType.fields;
         const productPossibleTypes = productType.possibleTypes;
-
-        // console.log("productFields", productFields);
-        // console.log("productPossibleTypes", productPossibleTypes);
 
         // Instead of using the complex subFields extraction, let's build paths directly
         const allPaths = [];

@@ -41,25 +41,25 @@ class FeedsTable extends React.Component {
         const self = this;
 
         // Wait for credentials to be available from parent App component
-        const waitForCredentials = () => {
-            return new Promise((resolve) => {
-                const checkCredentials = () => {
-                    if (this.props.ims.token && this.props.ims.org) {
-                        console.log('Credentials available in FeedsTable:', {
-                            token: !!this.props.ims.token,
-                            org: !!this.props.ims.org
-                        });
-                        resolve();
-                    } else {
-                        console.log('Waiting for credentials in FeedsTable...');
-                        setTimeout(checkCredentials, 100);
-                    }
-                };
-                checkCredentials();
-            });
-        };
+        // const waitForCredentials = () => {
+        //     return new Promise((resolve) => {
+        //         const checkCredentials = () => {
+        //             if (this.props.ims.token && this.props.ims.org) {
+        //                 console.log('Credentials available in FeedsTable:', {
+        //                     token: !!this.props.ims.token,
+        //                     org: !!this.props.ims.org
+        //                 });
+        //                 resolve();
+        //             } else {
+        //                 console.log('Waiting for credentials in FeedsTable...');
+        //                 // setTimeout(checkCredentials, 100);
+        //             }
+        //         };
+        //         checkCredentials();
+        //     });
+        // };
 
-        await waitForCredentials();
+        // await waitForCredentials();
 
         async function fetchData() {
             const feedData = await self.getFeeds();
@@ -172,10 +172,6 @@ class FeedsTable extends React.Component {
                 loading: false
             });
         })
-    }
-
-    copyToClipboard = () => {
-        
     }
 
     triggerFeedActionDialogState = (uuid) => {
