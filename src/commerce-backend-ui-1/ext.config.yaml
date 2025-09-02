@@ -106,7 +106,7 @@ runtimeManifest:
           web: 'yes'
           runtime: nodejs:22
           annotations:
-            require-adobe-auth: false
+            require-adobe-auth: true
             final: true
         getGqlSchema:
           function: actions/magentoActions/getGqlSchema.js
