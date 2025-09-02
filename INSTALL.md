@@ -94,7 +94,7 @@ Add to `.env` line `FEED_GENERATOR_PROVIDER_ID=<id>`
 
 9. Run `aio app deploy` to deploy the app.
 
-10. Go To your application environment via Browser. Click on "Add Service" -> Event -> 3rd Party Custom Events -> And select your provider and event subscription. In Receiver define "Runtime action" as `processGeneration` action.
+10. Go to Developer console via Browser. Open your application. Click on "Add Service" -> Event -> 3rd Party Custom Events -> And select your provider and event subscription. In Receiver define "Runtime action" as `processGeneration` action.
 
 11. The app is ready to use. Please save the link to your application environment. Additionally, you can replicate all steps in your production environment and publish the application, so it will be available on your exchange dashboard.
 
