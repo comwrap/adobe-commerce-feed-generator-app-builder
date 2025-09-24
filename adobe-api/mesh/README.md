@@ -13,7 +13,7 @@ then
 
 ### API Mesh access
 
-Mesh api GraphQl endpoint follows next patter https://graph.adobe.io/api/{meshId}/graphql?api_key={mesh_api_key}
+Mesh api GraphQl endpoint follows next pattern https://graph.adobe.io/api/{meshId}/graphql?api_key={mesh_api_key}
 
 {mesh_api_key} can be moved to headers, so GQL endpoint will be
 https://graph.adobe.io/api/{meshId}/graphql and need to add header `X-Api-Key` with value `{mesh_api_key}`
@@ -47,7 +47,7 @@ After this `aio api-mesh` commands should works fine.
 
 -------------------------------------------------
 
-If Adobe Mesh Gql response fail need to check source URL (magento.host): SSL certificate MUST be VALID, otherwise Mesh GQL enpoint response error.
+If Adobe Mesh Gql response fail need to check source URL (magento.host): SSL certificate MUST be VALID, otherwise Mesh GQL endpoint response error.
 
 -------------------------------------------------
 
@@ -63,7 +63,7 @@ If Adobe Mesh Gql response fail need to check source URL (magento.host): SSL cer
         "handler": {
           "openapi": {
             "source": "https://magento.host/rest/schema?services=storeWebsiteRepositoryV1",
-             // can be udpated to /rest/schema?services=all if we want to use all rest enpoint in mesh
+             // can be updated to /rest/schema?services=all if we want to use all rest enpoint in mesh
             
             "schemaHeaders": {
               "Authorization": "Bearer {context.headers['x-ac-api-token']}" 

@@ -42,7 +42,7 @@ async function generateFeed(uuid, params) {
                 "expiration": "2023-03-03T12:58:47.000Z",
                 "value": {
                     "created_at": "2023-03-02T12:58:47.770Z",
-                    "feedBody": "<item>\n  <g:id>{{sku}}</g:id>\n  <title>{{SimpleProduct||weight}}</title>\n  \n <g:image_link>{{image.url count='2'}}</g:image_link>\n </item>",
+                    "feedBody": "<item>\n  <g:id>{{sku}}</g:id>\n  <g:category index=\"2\">{{categories.name}}</g:category>\n  \n <g:image_link>{{image.url count='2'}}</g:image_link>\n </item>",
                     "feedFooter": "</items>",
                     "feedHeader": "<items>",
                     "feedName": "Test XML",
@@ -50,7 +50,7 @@ async function generateFeed(uuid, params) {
                     "generated_at": "",
                     "status": "pending",
                     "store_code": "de||main_website_store||base",
-                    "searchQuery": "Motiv",
+                    "searchQuery": "Gum",
 //                    "filterQuery": "{\n   \"attribute\": \"price\",\n   \"range\": {\n     \"from\": 10,\n     \"to\": 100\n   }\n}"
                 }
             }

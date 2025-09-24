@@ -15,6 +15,7 @@ To required environment add:
 
 * I/O Management API with OAuth Server-to-Server
 * I/O Events
+* Adobe Commerce as a Cloud Service (SaaS) - is required to manage authorization between the application and your Adobe Commerce instance.
 
 
 ### Adobe API Mesh (Optional)
@@ -98,3 +99,13 @@ Add to `.env` line `FEED_GENERATOR_PROVIDER_ID=<id>`
 
 11. The app is ready to use. Please save the link to your application environment. Additionally, you can replicate all steps in your production environment and publish the application, so it will be available on your exchange dashboard.
 
+## Adding to Adobe Admin UI (SaaS)
+
+For Adobe Commerce SaaS, you can add the module to be available in your Commerce Admin.
+
+1. Go to Stores -> Configuration in your Adobe Commerce Admin
+2. Go to Adobe Services -> Admin UI SDK
+3. Click "Configure extensions" and choose respective Environment and Application.
+4. Save changes.
+
+For more information and troubleshooting please go to: https://developer.adobe.com/commerce/extensibility/admin-ui-sdk/configuration/

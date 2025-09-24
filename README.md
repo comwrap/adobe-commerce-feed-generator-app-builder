@@ -199,7 +199,9 @@ Header and Footer currently have a support to variables (Only 1 actually)
 
 Variables are defined using double curly braces (`{{ }}`) and correspond to fields in the Adobe Commerce GraphQL product output. For example, `{{sku}}` will be replaced with the product's SKU.
 
-##### Additional parameters
+##### Additional parameterss
+
+Note: The examples in 'Additional parameters' show how to use the parameters. The tag names may be different in your API, as they are specific to your system.
 
 ###### Repeating Tags with `count`
 
@@ -217,14 +219,13 @@ To select a specific element from an array, use the `index` property. This will 
 <g:product_type>{{categories.name index="2"}}</g:product_type>
 ```
 
-##### Selecting Attribute with Specific code
+##### Selecting Attribute with Specific code (SaaS specific feature) 
 
 ```xml
 <color>{{attributes.value code='color'}}</color>
 ```
 
 Add attributes.value is an Array of attributes, to get specific attribute, you can use "code" parameter and define attribute with which code you want to use.
-
 
 #### Example for Google Feed
 
@@ -242,11 +243,11 @@ Add attributes.value is an Array of attributes, to get specific attribute, you c
   <g:id>{{sku}}</g:id>
   <title>{{name}}</title>
   <description>{{description.html}}</description>
-  <link>https://www.URL.com/{{detail_page}}</link>
+  <link>https://www.URL.com/{{url_key}}</link>
   <g:image_link>{{image.url}}</g:image_link>
   <g:condition>new</g:condition>
   <g:price>{{price_range.maximum_price.final_price.value}} {{price_range.maximum_price.final_price.currency}}</g:price>
-  <g:product_type index=2>{{categories.name}}</g:product_type>
+  <g:category index="2">{{categories.name}}</g:category>
   <g:mpn>{{sku}}</g:mpn>
   <g:additional_image_link><![CDATA[{{image.url}}?width=350&height=350&fit=crop]]></g:additional_image_link>
 </item>
@@ -257,10 +258,11 @@ Add attributes.value is an Array of attributes, to get specific attribute, you c
 ```xml
 <item>
   <sku>{{sku}}</sku>
-  <weight>{{SimpleProduct||weight}}</weight>
-  <image>{{media_gallery.url count="2"}}</image>
+  <weight>{{description}}</weight>
+  <image>{{images.url count="2"}}</image>
   <color>{{attributes.value code='color'}}</color>
-  <price>{{SimpleProduct||price_range.maximum_price.final_price.value}}</price>
+  <color>{{attributes.value code='weight'}}</color>
+  <price>{{SimpleProductView||price.final.amount.value}} {{SimpleProductView||price.final.amount.currency}}</price>
 </item>
 ```
 

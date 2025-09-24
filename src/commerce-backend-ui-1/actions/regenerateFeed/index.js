@@ -1,5 +1,9 @@
 const { Core, Events } = require('@adobe/aio-sdk')
 const uuid = require('uuid')
+
+const { getImsAccessToken } = require('@adobe/commerce-sdk-auth')
+const { fromParams } = require('../auth')
+
 const {
   CloudEvent
 } = require("cloudevents");
@@ -12,8 +16,6 @@ async function main (params) {
 
   try {
 
-    console.log("called index.js")
- 
     params['payload'] = {"uuid": params.uuid}
 
     // check for missing request input parameters and headers
@@ -26,8 +28,14 @@ async function main (params) {
     }
 
     // extract the user Bearer token from the Authorization header
-    const token = getBearerToken(params)
+    let token = getBearerToken(params)
     
+    const authParams = fromParams(params)
+    if (authParams?.ims) {
+        const imsResponse = await getImsAccessToken(authParams.ims)
+        token = imsResponse.access_token
+    }
+
     // initialize the client
     const orgId = params.__ow_headers['x-gw-ims-org-id']
 

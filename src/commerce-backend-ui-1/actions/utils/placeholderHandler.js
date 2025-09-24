@@ -119,32 +119,33 @@ const handleCategories = (placeholder, item, feed, type) => {
   let itemCounter = 0;
   for (let placeholderPart of placeholderParts) {
 
-    if (value.toString() === "") { 
+    if (typeof value !== "undefined") {
 
-      if (itemCounter === 0) {
-
-        /**
-         * @ToDo Consider to use index as a property for define position of the value in the array if there are multiple values
-         * Example: 
-         * Categories: {{categories.name index=0}}
-         * Json: 
-         * {
-         *  "categories": [
-         *   {"name": "Category 1"},
-         *   {"name": "Category 2"}
-         * ]
-         * }
-         */
-        // if (placeholderProperties['index'] !== undefined) {
-          // value = item[placeholderPart][placeholderProperties['index']];
-        // } else {
-          value = item[placeholderPart][0];
-        // }
-      } else {
-        value = item[placeholderPart]  
+    if (value.toString() === "") {
+        if (itemCounter === 0) {
+          /**
+           * @ToDo Consider to use index as a property for define position of the value in the array if there are multiple values
+           * Example: 
+           * Categories: {{categories.name index=0}}
+           * Json: 
+           * {
+           *  "categories": [
+           *   {"name": "Category 1"},
+           *   {"name": "Category 2"}
+           * ]
+           * }
+           */
+          // if (placeholderProperties['index'] !== undefined) {
+            // value = item[placeholderPart][placeholderProperties['index']];
+          // } else {
+            value = item[placeholderPart][0];
+          // }
+        } else {
+          value = item[placeholderPart]  
+        }
+      } else { 
+        value = value[placeholderPart];
       }
-    } else { 
-      value = value[placeholderPart];
     }
     itemCounter++;
   }
