@@ -4,6 +4,7 @@
 
 - Node.js 18+
 - Adobe I/O CLI
+- For PaaS integration with Admin UI: Adobe Commerce Admin UI SDK v3+ (see [Installation Guide](https://developer.adobe.com/commerce/extensibility/admin-ui-sdk/installation/))
 
 ## Adobe Console preparation
 
@@ -31,9 +32,25 @@ To required environment add:
 
 1. Clone the repository
 2. Run `npm install` to install the dependencies
-3. Go to [Project](https://developer.adobe.com/console), select Environment and click on "Download All" button.
-4. Copy the env.dist file into .env file. `cp env.dist .env`
-4. Execute `aio app use <path-to-file>` with file you just downloaded. (Merge files if you already have .env file)
+3. Copy the env.dist file into .env file: `cp env.dist .env`
+4. Configure the project environment using one of the following methods:
+
+**Option A: Download configuration from Console**
+
+   - Go to [Adobe Developer Console](https://developer.adobe.com/console), select your Project and Environment
+   - Click on "Download All" button
+   - Execute `aio app use <path-to-downloaded-file>` (Merge files if you already have .env file)
+
+**Option B: Configure via CLI**
+
+   ```bash
+   aio login
+   aio console org select
+   aio console project select
+   aio console workspace select
+   aio app use
+   ```
+
 5. Edit `.env` file with your project details.
 Set following variables: 
 
@@ -64,9 +81,12 @@ COMMERCE_BASE_URL= // Commerce instance REST API Url
 
 In env.dist file you will find set of Auth parameters.
 
-**For Adobe Commerce PaaS:**
+**For Adobe Commerce (PaaS Only):**
 
-These values can be copied from the Integration Details under System > Integrations in your Adobe Commerce backend
+> [!NOTE]
+> For SaaS Installation those values are not needed and can be skipped.
+
+These values can be copied from the Integration Details under System > Integrations in your Adobe Commerce backend.
 
 ```
 COMMERCE_CONSUMER_KEY=
@@ -75,7 +95,7 @@ COMMERCE_ACCESS_TOKEN=
 COMMERCE_ACCESS_TOKEN_SECRET=
 ```
 
-**For Adobe Commerce SaaS:**
+**For Adobe Commerce (SaaS & PaaS):**
 
 Documentation how to get these values is available here: https://developer.adobe.com/developer-console/docs/guides/authentication/ServerToServerAuthentication/implementation
 
@@ -109,3 +129,31 @@ For Adobe Commerce SaaS, you can add the module to be available in your Commerce
 4. Save changes.
 
 For more information and troubleshooting please go to: https://developer.adobe.com/commerce/extensibility/admin-ui-sdk/configuration/
+
+## Adding to Adobe Admin UI (PaaS)
+
+For Adobe Commerce PaaS (On-Premise/Cloud), you need to install and configure the Admin UI SDK module.
+
+### Install the Admin UI SDK Module
+
+1. Install the module via Composer:
+
+```bash
+composer require "magento/commerce-backend-sdk": ">=3.0"
+```
+
+2. Enable the module (for On-premises installation):
+
+```bash
+bin/magento module:enable Magento_AdminUiSdk
+bin/magento setup:upgrade
+bin/magento cache:clean
+```
+
+### Configure the Admin UI SDK
+
+Follow the official Adobe documentation for configuration steps:
+- [Admin UI SDK Configuration](https://developer.adobe.com/commerce/extensibility/admin-ui-sdk/configuration/)
+
+For detailed installation instructions, please refer to:
+- [Admin UI SDK Installation](https://developer.adobe.com/commerce/extensibility/admin-ui-sdk/installation/)

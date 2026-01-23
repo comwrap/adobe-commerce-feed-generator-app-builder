@@ -63,11 +63,11 @@ If Adobe Mesh Gql response fail need to check source URL (magento.host): SSL cer
         "handler": {
           "openapi": {
             "source": "https://magento.host/rest/schema?services=storeWebsiteRepositoryV1",
-             // can be updated to /rest/schema?services=all if we want to use all rest enpoint in mesh
+             // can be updated to /rest/schema?services=all if we want to use all rest endpoint in mesh
             
             "schemaHeaders": {
               "Authorization": "Bearer {context.headers['x-ac-api-token']}" 
-              // magento integration api token. Must be included to Headers in request to Mesh GQl enpoint 
+              // magento integration api token. Must be included to Headers in request to Mesh GQl endpoint 
             },
             "operationHeaders": {
               "Authorization": "Bearer {context.headers['x-ac-api-token']}",

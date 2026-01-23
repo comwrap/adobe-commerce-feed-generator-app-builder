@@ -15,8 +15,10 @@ import {
     Image,
     Heading,
     Item,
-    Flex
+    Flex,
+    ProgressCircle
 } from '@adobe/react-spectrum'
+import { attach } from '@adobe/uix-guest'
 
 import logo from 'url:../../media/logo.png'
 
@@ -45,6 +47,30 @@ function App(props) {
     const [feedFormKey, setFeedFormKey] = React.useState(0);
     const [contentKey, setContentKey] = React.useState(0);
     const [tab, setTab] = React.useState('home');
+    const [imsState, setImsState] = React.useState(props.ims);
+    const [isTokenReady, setIsTokenReady] = React.useState(!!props.ims.token);
+
+    // Get token from UIX guest context once at startup if not available
+    React.useEffect(() => {
+        async function initToken() {
+            if (!imsState.token) {
+                console.log('App: Token not available, fetching from UIX guest context...');
+                try {
+                    const guestConnection = await attach({ id: 'feedGenerator' });
+                    const token = guestConnection?.sharedContext?.get('imsToken');
+                    const org = guestConnection?.sharedContext?.get('imsOrgId');
+                    if (token) {
+                        console.log('App: Got token from UIX guest context');
+                        setImsState({ ...imsState, token, org });
+                    }
+                } catch (e) {
+                    console.error('App: Failed to get token from UIX guest context:', e);
+                }
+            }
+            setIsTokenReady(true);
+        }
+        initToken();
+    }, []);
 
     const reloadFeedTable = () => {
         setContentKey(contentKey + 1);
@@ -57,6 +83,20 @@ function App(props) {
 
     const changeTab = (tabKey) => {
         setTab(tabKey)
+    }
+
+    // Show loading while waiting for token
+    if (!isTokenReady) {
+        return (
+            <Provider theme={defaultTheme} colorScheme="light">
+                <View padding="size-1000">
+                    <Flex direction="column" alignItems="center" justifyContent="center" gap="size-200">
+                        <ProgressCircle aria-label="Loading..." isIndeterminate size="L" />
+                        <Heading level={4}>Loading Feed Generator...</Heading>
+                    </Flex>
+                </View>
+            </Provider>
+        );
     }
 
     return (
@@ -102,11 +142,11 @@ function App(props) {
                                         reloadFeedsTable={reloadFeedTable}
                                         isOpen={isOpen}
                                         setDialog={setOpen}
-                                        ims={props.ims}
+                                        ims={imsState}
                                         runtime={props.runtime}/>
                                     <View marginStart="size-250">
                                         <SettingsContainer
-                                            ims={props.ims}
+                                            ims={imsState}
                                             runtime={props.runtime}/>
                                     </View>
                                 </Flex>
@@ -117,11 +157,10 @@ function App(props) {
 
                 <View gridArea="content" paddingX="size-250" paddingY="size-100">
                     <Content key={contentKey}>
-                        <TabPanels>
-                            <Item key="home"><Home ims={props.ims} runtime={props.runtime} changeTab={changeTab}/></Item>
-                            <Item key="feeds"><Feeds ims={props.ims} runtime={props.runtime}/></Item>
-                            <Item key="docs"><Docs/></Item>
-                        </TabPanels>
+                        {/* Lazy load tabs - only mount selected tab to avoid duplicate API calls */}
+                        {tab === 'home' && <Home ims={imsState} runtime={props.runtime} changeTab={changeTab}/>}
+                        {tab === 'feeds' && <Feeds ims={imsState} runtime={props.runtime}/>}
+                        {tab === 'docs' && <Docs/>}
                     </Content>
                 </View>
 

@@ -1,6 +1,6 @@
 const { Core } = require('@adobe/aio-sdk')
 const { errorResponse } = require('../utils.js')
-const zlib  = require('react-zlib-js')
+const zlib = require('zlib')
 const { getSchema } = require('../acGqlLib/schema.js')
 
 // main function that will be executed by Adobe I/O Runtime

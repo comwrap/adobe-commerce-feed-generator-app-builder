@@ -48,9 +48,9 @@ function validateParams (params, expected) {
  * @returns {object} - returns the auth object for the request
  * @throws {Error} - throws error if the params are missing
  */
-function fromParams (params) {
+function fromParams (params, forceIms = false) {
   // `aio app dev` compatibility: inputs mapped to undefined env vars come as $<input_name> in dev mode, but as '' in prod mode
-  if (params.COMMERCE_CONSUMER_KEY && params.COMMERCE_CONSUMER_KEY !== '$COMMERCE_CONSUMER_KEY') {
+  if (params.COMMERCE_CONSUMER_KEY && params.COMMERCE_CONSUMER_KEY !== '$COMMERCE_CONSUMER_KEY' && !forceIms) {
     logger.info('Commerce client is using Commerce OAuth1 authentication')
     validateParams(params,
       ['COMMERCE_CONSUMER_KEY', 'COMMERCE_CONSUMER_SECRET', 'COMMERCE_ACCESS_TOKEN', 'COMMERCE_ACCESS_TOKEN_SECRET'])

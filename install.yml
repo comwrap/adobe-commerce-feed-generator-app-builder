@@ -4,7 +4,6 @@ $id: https://adobe.io/schemas/app-builder-templates/1
 categories:
   - action
   - ui
-  - graphql-mesh
   - events
   - helper-template
 
@@ -17,6 +16,7 @@ apis:
   - code: AdobeIOManagementAPISDK
   - code: AdobeCommerceWithAdobeID
   - code: GraphQLServiceSDK
+  - code: ACCS-REST-API
 
 extensions:
   - extensionPointId: commerce/backend-ui/1

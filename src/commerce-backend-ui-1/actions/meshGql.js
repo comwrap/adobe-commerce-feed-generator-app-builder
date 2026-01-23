@@ -29,7 +29,17 @@ async function callMeshGql(gqlRequest, params, variables = {}) {
   const result = await response.json();
   
   if (result.errors) {
-    throw new Error(`failed request to Mesh API. Status: ${response.status} and message: ${JSON.stringify(result.errors)}`)
+    // Check if we have data alongside errors (partial success)
+    const hasProductsData = result.data?.products?.items?.length > 0 || 
+                            result.data?.productSearch?.items?.length > 0;
+    
+    if (hasProductsData) {
+      // Return data with warnings attached - don't throw, allow processing to continue
+      result.warnings = result.errors;
+    } else {
+      // No usable data - throw error
+      throw new Error(`failed request to Mesh API. Status: ${response.status} and message: ${JSON.stringify(result.errors)}`)
+    }
   }
   
   return result;

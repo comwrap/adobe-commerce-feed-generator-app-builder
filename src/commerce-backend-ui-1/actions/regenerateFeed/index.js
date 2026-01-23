@@ -24,29 +24,30 @@ async function main (params) {
     const errorMessage = checkMissingRequestInputs(params, requiredParams, requiredHeaders)
     if (errorMessage) {
       // return and log client errors
+      logger.error('Missing required inputs:', errorMessage)
       return errorResponse(400, errorMessage, logger)
     }
 
     // extract the user Bearer token from the Authorization header
     let token = getBearerToken(params)
     
-    const authParams = fromParams(params)
+    const authParams = fromParams(params, true)
     if (authParams?.ims) {
         const imsResponse = await getImsAccessToken(authParams.ims)
         token = imsResponse.access_token
+        logger.info('Got IMS access token')
+    } else {
+        logger.info('NOT using IMS auth - using Bearer token from header')
     }
 
     // initialize the client
     const orgId = params.__ow_headers['x-gw-ims-org-id']
-
-
     const eventsClient = await Events.init(orgId, params.apiKey, token)
 
-    // Create cloud event for the given payload
     const cloudEvent = createCloudEvent(params.providerId, params.eventCode, params.payload)
 
-    // Publish to I/O Events
     const published = await eventsClient.publishEvent(cloudEvent)
+    
     let statusCode = 200
     if (published === 'OK') {
       logger.info('Published successfully to I/O Events')
@@ -63,8 +64,6 @@ async function main (params) {
     return response
 
   } catch (error) {
-    // log any server errors
-    logger.error(error)
     // return with 500
     return errorResponse(500, 'server error: ' + error, logger)
   }

@@ -7,7 +7,6 @@ import actions from '../config.json'
 import actionWebInvoke from '../utils'
 import Welcome from './Welcome'
 import RecentFeeds from './RecentFeeds'
-import { attach } from '@adobe/uix-guest'
 
 class Home extends React.Component {
     constructor(props) {
@@ -32,28 +31,6 @@ class Home extends React.Component {
             profiles: null,
             propsState: props
         }
-    }
-
-    async componentWillMount() {
-        this.setState({actionInvokeInProgress: true})
-
-        const headers = {}
-        const params = {}
-
-        if (!this.props.ims.token) {
-            const guestConnection = await attach({ id: 'feedGenerator' });
-            this.props.ims.token = guestConnection?.sharedContext?.get('imsToken');
-            this.props.ims.org = guestConnection?.sharedContext?.get('imsOrgId');
-        }
-
-        // set the authorization header and org from the ims props object
-        if (this.props.ims.token && !headers.authorization) {
-            headers.authorization = 'Bearer ' + this.props.ims.token
-        }
-        if (this.props.ims.org && !headers['x-gw-ims-org-id']) {
-            headers['x-gw-ims-org-id'] = this.props.ims.org
-        }
-       
     }
 
     // invoke send-promo action by user email

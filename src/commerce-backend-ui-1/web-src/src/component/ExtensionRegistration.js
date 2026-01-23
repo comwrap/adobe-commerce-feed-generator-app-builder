@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import Home from './Home'
+import App from './App'
 import { attach, register } from '@adobe/uix-guest'
 
 export default function ExtensionRegistration(props) {
@@ -32,5 +32,5 @@ export default function ExtensionRegistration(props) {
     })()
   }, [])
 
-  return <Home ims={props.ims} runtime={props.runtime} />
+  return <App ims={props.ims} runtime={props.runtime} />
 }

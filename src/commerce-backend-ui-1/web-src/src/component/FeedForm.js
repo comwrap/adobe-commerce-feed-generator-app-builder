@@ -20,8 +20,7 @@ import moment from "moment";
 
 import {invokeAction} from '../utils'
 import {validateStateAgainstValue, validateFeedForm} from './validators/FormValidator'
-import zlib from 'react-zlib-js/index';
-import buffer from 'react-zlib-js/buffer';
+import pako from 'pako';
 import { attach } from '@adobe/uix-guest'
 
 class FeedForm extends React.Component {
@@ -524,12 +523,25 @@ class FeedForm extends React.Component {
     async getSubTypesForObject(name, withCategories = true, autocompletionList = []) {
 
         const gqlSchema = await this.getGqlSchemaData();
+        console.log("GQL schema:", gqlSchema);
 
         const config = await this.getApplicationConfig();
 
         const productType = gqlSchema.data.__schema.types.find(type => type.name === name);
+        
+        if (!productType) {
+            console.warn(`Type "${name}" not found in GraphQL schema. Available types:`, 
+                gqlSchema.data.__schema.types.map(t => t.name).slice(0, 50));
+            return autocompletionList;
+        }
+        
         const productFields = productType.fields;
         const productPossibleTypes = productType.possibleTypes;
+        
+        if (!productFields) {
+            console.warn(`Type "${name}" has no fields defined`);
+            return autocompletionList;
+        }
 
         // Instead of using the complex subFields extraction, let's build paths directly
         const allPaths = [];
@@ -542,17 +554,17 @@ class FeedForm extends React.Component {
         if (productPossibleTypes && productPossibleTypes.length > 0) {
             for (const possibleType of productPossibleTypes) {
                 const typeName = possibleType.name;
-                const typeFields = gqlSchema.data.__schema.types.find(type => type.name === typeName);
+                const typeDefinition = gqlSchema.data.__schema.types.find(type => type.name === typeName);
                 
-                if (typeFields && typeFields.fields) {
+                if (typeDefinition && typeDefinition.fields) {
                     console.log(`Processing possible type: ${typeName}`);
                     
                     // Extract all paths for this type
                     const typePaths = [];
-                    this.extractAllPaths(typeFields.fields, gqlSchema, typePaths);
+                    this.extractAllPaths(typeDefinition.fields, gqlSchema, typePaths);
                 
                     // Add direct fields with type prefix
-                    const typeAttributeCodes = this.extractAttributeCodes(typeFields.fields, gqlSchema);
+                    const typeAttributeCodes = this.extractAttributeCodes(typeDefinition.fields, gqlSchema);
                     typeAttributeCodes.forEach(fieldName => {
                         mergedAttributes.push(`${typeName}.${fieldName}`);
                     });
@@ -570,15 +582,20 @@ class FeedForm extends React.Component {
         const inputObj = this.createNestedObject(mergedAttributes);
 
         if (withCategories && config.ims !== true) {
-            const catFields = gqlSchema.data.__schema.types.find(type => type.name === "CategoryInterface").fields;
-            const catPaths = [];
-            this.extractAllPaths(catFields, gqlSchema, catPaths);
-            
-            const catAttributeCodes = this.extractAttributeCodes(catFields, gqlSchema);
-            const mergedCatAttributes = [...catAttributeCodes, ...catPaths];
-            mergedCatAttributes.sort();
+            const categoryType = gqlSchema.data.__schema.types.find(type => type.name === "CategoryInterface");
+            if (categoryType && categoryType.fields) {
+                const catFields = categoryType.fields;
+                const catPaths = [];
+                this.extractAllPaths(catFields, gqlSchema, catPaths);
+                
+                const catAttributeCodes = this.extractAttributeCodes(catFields, gqlSchema);
+                const mergedCatAttributes = [...catAttributeCodes, ...catPaths];
+                mergedCatAttributes.sort();
 
-            inputObj['categories'] = this.createNestedObject(mergedCatAttributes);
+                inputObj['categories'] = this.createNestedObject(mergedCatAttributes);
+            } else {
+                console.warn('CategoryInterface type not found in GraphQL schema');
+            }
         }
 
         const convertedObj = this.convertPriceObjects(inputObj);
@@ -668,9 +685,15 @@ class FeedForm extends React.Component {
         const schema = await invokeAction('feed-generator/getGqlSchema', headers, {}, this.props);
         console.log("Schema response: " + schema);
 
-        const compressed = buffer.from(schema, 'base64');
-        const decompressed = zlib.inflateRawSync(compressed);
-        const decompressedString = decompressed.toString();
+        // Decode base64 to Uint8Array
+        const binaryString = atob(schema);
+        const compressed = new Uint8Array(binaryString.length);
+        for (let i = 0; i < binaryString.length; i++) {
+            compressed[i] = binaryString.charCodeAt(i);
+        }
+        // Decompress using pako
+        const decompressed = pako.inflateRaw(compressed);
+        const decompressedString = new TextDecoder().decode(decompressed);
 
         sessionStorage.setItem(cacheKey, decompressedString);
 
@@ -707,22 +730,28 @@ class FeedForm extends React.Component {
         fields.forEach(field => {
             if (field.type.kind === 'OBJECT' && !field.isDeprecated) {
                 const typeName = field.type.name;
-                const subTypeFields = gqlSchema.data.__schema.types.find(type => type.name === typeName).fields;
-                subFields[field.name] = subTypeFields;
-                this.extractSubFields(subTypeFields, gqlSchema, subFields, `${prefix}${field.name}.`);
+                const subType = gqlSchema.data.__schema.types.find(type => type.name === typeName);
+                if (subType && subType.fields) {
+                    subFields[field.name] = subType.fields;
+                    this.extractSubFields(subType.fields, gqlSchema, subFields, `${prefix}${field.name}.`);
+                }
             } else if (field.type.kind === 'LIST') { 
-                if (field.type.ofType.kind === 'OBJECT') {
-                        const ofTypeName = field.type.ofType.name;
-                        const subTypeFields = gqlSchema.data.__schema.types.find(type => type.name === ofTypeName).fields;
-                        subFields[field.name] = subTypeFields;
-                        this.extractSubFields(subTypeFields, gqlSchema, subFields, `${prefix}${field.name}.`);
+                if (field.type.ofType && field.type.ofType.kind === 'OBJECT') {
+                    const ofTypeName = field.type.ofType.name;
+                    const subType = gqlSchema.data.__schema.types.find(type => type.name === ofTypeName);
+                    if (subType && subType.fields) {
+                        subFields[field.name] = subType.fields;
+                        this.extractSubFields(subType.fields, gqlSchema, subFields, `${prefix}${field.name}.`);
+                    }
                 }
             } else if (field.type.kind === 'NON_NULL') {
-                if (field.type.ofType.kind === 'OBJECT') {
+                if (field.type.ofType && field.type.ofType.kind === 'OBJECT') {
                     const ofTypeName = field.type.ofType.name;
-                    const subTypeFields = gqlSchema.data.__schema.types.find(type => type.name === ofTypeName).fields;
-                    subFields[field.name] = subTypeFields;
-                    this.extractSubFields(subTypeFields, gqlSchema, subFields, `${prefix}${field.name}.`);
+                    const subType = gqlSchema.data.__schema.types.find(type => type.name === ofTypeName);
+                    if (subType && subType.fields) {
+                        subFields[field.name] = subType.fields;
+                        this.extractSubFields(subType.fields, gqlSchema, subFields, `${prefix}${field.name}.`);
+                    }
                 }
             } 
         });

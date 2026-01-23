@@ -8,6 +8,11 @@ Module compatible with both Adobe Commerce SaaS and PaaS.
 
 Please see [INSTALL.md](INSTALL.md) for more details.
 
+> [!IMPORTANT]
+> This application is designed to run within the Adobe Experience Cloud Shell or Adobe Commerce Admin UI. 
+> Viewing the deployed application directly via its URL outside of these environments will result in the UI not loading correctly.
+> Always access the application through the Experience Cloud Shell or via the Adobe Commerce Admin panel.
+
 ## Home page / Grid
 
 On the application home page you will see list of the feeds:
@@ -258,10 +263,10 @@ Add attributes.value is an Array of attributes, to get specific attribute, you c
 ```xml
 <item>
   <sku>{{sku}}</sku>
-  <weight>{{description}}</weight>
+  <description>{{description}}</description>
   <image>{{images.url count="2"}}</image>
   <color>{{attributes.value code='color'}}</color>
-  <color>{{attributes.value code='weight'}}</color>
+  <weight>{{attributes.value code='weight'}}</weight>
   <price>{{SimpleProductView||price.final.amount.value}} {{SimpleProductView||price.final.amount.currency}}</price>
 </item>
 ```

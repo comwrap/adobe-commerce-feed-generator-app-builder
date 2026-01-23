@@ -37,39 +37,12 @@ class FeedsTable extends React.Component {
     }
 
     async componentDidMount() {
-
-        const self = this;
-
-        // Wait for credentials to be available from parent App component
-        // const waitForCredentials = () => {
-        //     return new Promise((resolve) => {
-        //         const checkCredentials = () => {
-        //             if (this.props.ims.token && this.props.ims.org) {
-        //                 console.log('Credentials available in FeedsTable:', {
-        //                     token: !!this.props.ims.token,
-        //                     org: !!this.props.ims.org
-        //                 });
-        //                 resolve();
-        //             } else {
-        //                 console.log('Waiting for credentials in FeedsTable...');
-        //                 // setTimeout(checkCredentials, 100);
-        //             }
-        //         };
-        //         checkCredentials();
-        //     });
-        // };
-
-        // await waitForCredentials();
-
-        async function fetchData() {
-            const feedData = await self.getFeeds();
-            self.setState({
-                feeds: feedData,
-                loading: false
-            });
-        }
-
-        fetchData();
+        // Token is now guaranteed to be available from App.js
+        const feedData = await this.getFeeds();
+        this.setState({
+            feeds: feedData,
+            loading: false
+        });
     }
 
     async getFeeds() {
@@ -126,6 +99,11 @@ class FeedsTable extends React.Component {
                         error = actionResponse[uuid].value.error;
                     }
 
+                    let warning = ""
+                    if (actionResponse[uuid].value.warning !== undefined) {
+                        warning = actionResponse[uuid].value.warning;
+                    }
+
                     let nameUuid = "<Link><a href='test'>" + name + "</a><Link><Text>" + uuid + "</Text>";
 
                     let rowData = {
@@ -139,7 +117,8 @@ class FeedsTable extends React.Component {
                         'type': feedType,
                         'status': status,
                         'action': '',
-                        'error': error
+                        'error': error,
+                        'warning': warning
                     };
                     feedRows.push(rowData);
                     i = i + 1;
@@ -191,6 +170,7 @@ class FeedsTable extends React.Component {
             {name: 'NAME/UUID', uid: 'name'},
             {name: 'STORE', uid: 'store', width: 200},
             {name: 'FILE', uid: 'link', width: 100},
+            {name: 'INFO', uid: 'info', width: 100},
             {name: 'CREATED', uid: 'created_at', width: 200},
             {name: 'GENERATED', uid: 'generated_at', width: 200,},
             {name: 'TYPE', uid: 'type', width: 50},
@@ -245,19 +225,43 @@ class FeedsTable extends React.Component {
                     </div>
                 </Cell>
             } else if (fieldName === 'link') {
-                let errorMsg = item['error']
                 let link = item[fieldName];
-                if (errorMsg !== "") {
-                    return <Cell><TooltipTrigger delay='10'>
-                            <ActionButton isQuiet aria-label="Show Errors"><InfoOutline /></ActionButton>
-                            <Tooltip variant='negative' showIcon='true' width='550px'><div style={{ width: '500px' }}>{errorMsg}</div></Tooltip>
-                        </TooltipTrigger><ActionButton onPress={() => navigator.clipboard.writeText(errorMsg).then(() => console.log("Text copied to clipboard"))} isQuiet area-label="Copy error to clipboard"><Copy /></ActionButton></Cell>
-                }
                 if (link !== "" && typeof link !== 'undefined') {
                     return <Cell>
                         <View><Link><a href={link} target="_blank" download>Download</a></Link></View>
                     </Cell>
                 }
+                return <Cell></Cell>
+            } else if (fieldName === 'info') {
+                let errorMsg = item['error']
+                let warningMsg = item['warning']
+                
+                // Display error in red if present
+                if (errorMsg !== "" && errorMsg !== undefined) {
+                    return <Cell>
+                        <div style={{ display: 'flex', alignItems: 'center' }}>
+                            <TooltipTrigger delay='10'>
+                                <ActionButton isQuiet aria-label="Show Errors"><InfoOutline /></ActionButton>
+                                <Tooltip variant='negative' showIcon='true' width='550px'><div style={{ width: '500px' }}>{errorMsg}</div></Tooltip>
+                            </TooltipTrigger>
+                            <ActionButton onPress={() => navigator.clipboard.writeText(errorMsg).then(() => console.log("Text copied to clipboard"))} isQuiet aria-label="Copy error to clipboard"><Copy /></ActionButton>
+                        </div>
+                    </Cell>
+                }
+                
+                // Display warning in orange if present
+                if (warningMsg !== "" && warningMsg !== undefined) {
+                    return <Cell>
+                        <div style={{ display: 'flex', alignItems: 'center' }}>
+                            <TooltipTrigger delay='10'>
+                                <ActionButton isQuiet aria-label="Show Warnings"><InfoOutline color="notice" /></ActionButton>
+                                <Tooltip variant='neutral' showIcon='true' width='550px'><div style={{ width: '500px' }}>{warningMsg}</div></Tooltip>
+                            </TooltipTrigger>
+                            <ActionButton onPress={() => navigator.clipboard.writeText(warningMsg).then(() => console.log("Warning copied to clipboard"))} isQuiet aria-label="Copy warning to clipboard"><Copy /></ActionButton>
+                        </div>
+                    </Cell>
+                }
+                
                 return <Cell></Cell>
             } else if (fieldName === 'action') {
                 return <Cell>
