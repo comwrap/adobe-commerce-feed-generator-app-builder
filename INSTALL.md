@@ -18,16 +18,6 @@ To required environment add:
 * I/O Events
 * Adobe Commerce as a Cloud Service (SaaS) - is required to manage authorization between the application and your Adobe Commerce instance.
 
-
-### Adobe API Mesh (Optional)
-
-1. Add "API Mesh" service to your environment.
-2. Rename file `adobe-api/mesh/mesh.json.dist` into `adobe-api/mesh/mesh.json`.
-3. Change required options inside `adobe-api/mesh/mesh.json`.
-    * AC-URL (This should be your Adobe Commerce system's base URL to GQL Endpoint)
-
-4. Provision Mesh by using this file with `aio api-mesh create adobe-api/mesh/mesh.json`.
-
 ## Installation
 
 1. Clone the repository

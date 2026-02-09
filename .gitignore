@@ -41,7 +41,6 @@ coverage
 # logs folder for aio-run-detached
 logs
 
-adobe-api/mesh/mesh.json
 server.js
 test-placeholder-handler.js
 key.pem

@@ -5,6 +5,7 @@
   "license": "Apache-2.0",
   "author": "Comwrap Reply GmbH",
   "dependencies": {
+    "@adobe/aio-commerce-lib-app": "^0.1.0",
     "@adobe/aio-lib-files": "^4.1.2",
     "@adobe/aio-lib-state": "^5.3.0",
     "@adobe/aio-sdk": "^6.0.0",
@@ -28,10 +29,10 @@
     "json-to-graphql-query": "^2.2.5",
     "moment": "^2.29.4",
     "node-fetch": "^3.3.2",
+    "pako": "^2.1.0",
     "prop-types": "^15.8.1",
     "react": "^19.2.3",
     "react-dom": "^19.2.3",
-    "pako": "^2.1.0",
     "uuid": "^13.0.0"
   },
   "devDependencies": {
@@ -45,6 +46,7 @@
     "@tsconfig/node20": "^20.1.8",
     "bwip-js": "^4.8.0",
     "concurrently": "^9.2.1",
+    "eslint-plugin-jest": "^29.12.1",
     "follow-redirects": "^1.15.11",
     "jest": "^30.2.0",
     "nock": "^14.0.10",
