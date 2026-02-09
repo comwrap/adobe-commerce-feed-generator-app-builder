@@ -20,5 +20,6 @@ apis:
 
 extensions:
   - extensionPointId: commerce/backend-ui/1
+  - extensionPointId: commerce/extensibility/1
   
 runtime: true

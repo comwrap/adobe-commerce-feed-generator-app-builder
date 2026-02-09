@@ -1,0 +1,27 @@
+# The [pre-app-build] hooks are auto-generated. Do not remove or manually edit.
+hooks:
+  pre-app-build: npx aio-commerce-lib-app generate manifest
+
+operations:
+  # These worker processes definitions are auto-generated. Do not remove or manually edit.
+  workerProcess:
+    - type: action
+      impl: app-management/get-app-config
+
+runtimeManifest:
+  packages:
+    # This package definition is auto-generated. Do not remove or manually edit.
+    app-management:
+      license: Apache-2.0
+      actions:
+        get-app-config:
+          function: .generated/actions/app-management/get-app-config.js
+          web: yes
+          runtime: nodejs:22
+          inputs:
+            LOG_LEVEL: $LOG_LEVEL
+          annotations:
+            require-adobe-auth: true
+            final: true
+          include:
+            - [ .generated/app.commerce.manifest.json, app-management/ ]

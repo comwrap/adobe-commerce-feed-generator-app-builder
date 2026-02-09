@@ -2,6 +2,27 @@
 
 const { handlePlaceholder } = require('./utils/placeholderHandler');
 const { processVariables } = require('./utils/generation/processVariables');
+const { getConfigurationByKey, byCodeAndLevel } = require('@adobe/aio-commerce-lib-config');
+
+/**
+ * Helper function to get configuration value from @adobe/aio-commerce-lib-config
+ * Uses global scope with default code
+ * 
+ * @param {string} key - The configuration key to fetch
+ * @param {object} logger - Logger instance
+ * @returns {Promise<string>} The configuration value or empty string
+ */
+async function getConfigValue(key, logger) {
+  try {
+    if (logger) logger.info(`getConfigValue: key=${key}`)
+    const result = await getConfigurationByKey(key, byCodeAndLevel('global', 'global'))
+    if (logger) logger.info(`getConfigValue result for ${key}: ${JSON.stringify(result)}`)
+    return result?.config?.value || ''
+  } catch (error) {
+    if (logger) logger.error(`getConfigValue error for ${key}: ${error.message}`)
+    return ''
+  }
+}
 
 /**
  *
@@ -303,5 +324,6 @@ module.exports = {
   checkMissingRequestInputs,
   generateGqlItemsQueryBodyForTheFeed,
   generateFeedBodyForProduct,
-  processVariables
+  processVariables,
+  getConfigValue
 }

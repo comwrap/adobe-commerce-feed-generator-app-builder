@@ -22,6 +22,7 @@ runtimeManifest:
       license: Apache-2.0
       inputs:
         LOG_LEVEL: debug
+        CONFIG_ENCRYPTION_KEY: $CONFIG_ENCRYPTION_KEY
         apiKey: $SERVICE_API_KEY
         AC_GRAPHQL_URL: $AC_GRAPHQL_URL
         store: $AC_DEFAULT_STORE_CODE
