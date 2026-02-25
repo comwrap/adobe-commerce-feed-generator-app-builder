@@ -20,8 +20,7 @@ import moment from "moment";
 
 import {invokeAction} from '../utils'
 import {validateStateAgainstValue, validateFeedForm} from './validators/FormValidator'
-import zlib from 'react-zlib-js/index';
-import buffer from 'react-zlib-js/buffer';
+import pako from 'pako';
 import { attach } from '@adobe/uix-guest'
 
 class FeedForm extends React.Component {
@@ -97,14 +96,10 @@ class FeedForm extends React.Component {
         const self = this;
         let isNew = true;
 
-         if (!this.props.ims.token) {
-            console.log('No IMS token found, attaching to guest connection. FeedForm.js. componentDidMount ...')
+         if (!this.props.ims.token) {            console.log('No IMS token found, attaching to guest connection. FeedForm.js. componentDidMount ...')
             const guestConnection = await attach({ id: 'feedGenerator' });
-            console.log('Guest connection established FeedForm.js:', guestConnection);
             this.props.ims.token = guestConnection?.sharedContext?.get('imsToken');
-            console.log('IMS token FeedForm.js:', this.props.ims.token);
             this.props.ims.org = guestConnection?.sharedContext?.get('imsOrgId');
-            console.log('IMS org FeedForm.js:', this.props.ims.org);
         }
 
         //load data for existing feed
@@ -126,7 +121,7 @@ class FeedForm extends React.Component {
         }
 
         this.fetchData(isNew).then(response => {
-            console.log('form data loaded')
+            console.log('Form data loaded successfully')
         }).catch(err => {
             console.error('Error:', err)
         }).finally(() => {
@@ -167,7 +162,6 @@ class FeedForm extends React.Component {
 
             currentTime.setMinutes(currentTime.getMinutes() + intervalMinutes);
         }
-        // console.log(options)
         return options;
     }
 
@@ -179,8 +173,6 @@ class FeedForm extends React.Component {
         let stores, listObject, feed; // Declare variables outside the blocks
 
         if (isNew === true) {
-            console.log('fetch data for "New feed"');
-
             if (config.ims !== true){
                 [stores, listObject] = await Promise.all([
                     this.getStores(),
@@ -197,8 +189,6 @@ class FeedForm extends React.Component {
             });
             return [stores, listObject];
         }
-
-        console.log('fetch data for "Existing feed"');
 
         if (config.ims !== true){
             [stores, listObject, feed] = await Promise.all([
@@ -228,7 +218,6 @@ class FeedForm extends React.Component {
         if (this.props.ims.org && !headersData['x-gw-ims-org-id']) {
             headersData['x-gw-ims-org-id'] = this.props.ims.org
         }
-        // console.log("getHeaders:", headersData);
         return headersData;
     }
 
@@ -338,7 +327,7 @@ class FeedForm extends React.Component {
             });
 
             await invokeAction('feed-generator/regenerateFeed', headers, params, this.props).then(response => {
-                console.log('feed regeneration started')
+                console.log('Feed regeneration started successfully')
                 ToastQueue.positive("Feed regeneration scheduled.", {timeout: 5000})
             }).catch(err => {
                 ToastQueue.negative("Can't schedule feed regeneration.", {timeout: 5000})
@@ -364,8 +353,6 @@ class FeedForm extends React.Component {
         try {
 
             const websitesToStoreViewsList = await invokeAction('feed-generator/getAllStores', headers, params, this.props)
-            console.log(`All stores action response:`, websitesToStoreViewsList)
-
             if (websitesToStoreViewsList[0]?.items[0]?.code === undefined) {
                 ToastQueue.negative("Cannot receive list of Commerce Stores, check your API", {timeout: 5000})
                 this.setState({storeListOptions: [], actionResponseError: "Cannot receive list of Commerce Stores, check your API", actionInvokeInProgress: false})
@@ -391,10 +378,7 @@ class FeedForm extends React.Component {
                     children: storesChildren
                 });
             }
-            console.log(`stores data:`, storesData);
-            console.log(`storesFlat data:`, storesFlat);
             this.setState({storeListOptions: storesData, storeListFlat: storesFlat});
-            console.log(`storesFlat state data:`, this.state.storeListFlat);
 
             return storesData
         } catch (e) {
@@ -527,14 +511,21 @@ class FeedForm extends React.Component {
 
         const config = await this.getApplicationConfig();
 
-        // console.log("gqlSchema", gqlSchema);
-
         const productType = gqlSchema.data.__schema.types.find(type => type.name === name);
+        
+        if (!productType) {
+            console.warn(`Type "${name}" not found in GraphQL schema. Available types:`, 
+                gqlSchema.data.__schema.types.map(t => t.name).slice(0, 50));
+            return autocompletionList;
+        }
+        
         const productFields = productType.fields;
         const productPossibleTypes = productType.possibleTypes;
-
-        // console.log("productFields", productFields);
-        // console.log("productPossibleTypes", productPossibleTypes);
+        
+        if (!productFields) {
+            console.warn(`Type "${name}" has no fields defined`);
+            return autocompletionList;
+        }
 
         // Instead of using the complex subFields extraction, let's build paths directly
         const allPaths = [];
@@ -547,17 +538,15 @@ class FeedForm extends React.Component {
         if (productPossibleTypes && productPossibleTypes.length > 0) {
             for (const possibleType of productPossibleTypes) {
                 const typeName = possibleType.name;
-                const typeFields = gqlSchema.data.__schema.types.find(type => type.name === typeName);
+                const typeDefinition = gqlSchema.data.__schema.types.find(type => type.name === typeName);
                 
-                if (typeFields && typeFields.fields) {
-                    console.log(`Processing possible type: ${typeName}`);
-                    
+                if (typeDefinition && typeDefinition.fields) {                    
                     // Extract all paths for this type
                     const typePaths = [];
-                    this.extractAllPaths(typeFields.fields, gqlSchema, typePaths);
+                    this.extractAllPaths(typeDefinition.fields, gqlSchema, typePaths);
                 
                     // Add direct fields with type prefix
-                    const typeAttributeCodes = this.extractAttributeCodes(typeFields.fields, gqlSchema);
+                    const typeAttributeCodes = this.extractAttributeCodes(typeDefinition.fields, gqlSchema);
                     typeAttributeCodes.forEach(fieldName => {
                         mergedAttributes.push(`${typeName}.${fieldName}`);
                     });
@@ -575,15 +564,20 @@ class FeedForm extends React.Component {
         const inputObj = this.createNestedObject(mergedAttributes);
 
         if (withCategories && config.ims !== true) {
-            const catFields = gqlSchema.data.__schema.types.find(type => type.name === "CategoryInterface").fields;
-            const catPaths = [];
-            this.extractAllPaths(catFields, gqlSchema, catPaths);
-            
-            const catAttributeCodes = this.extractAttributeCodes(catFields, gqlSchema);
-            const mergedCatAttributes = [...catAttributeCodes, ...catPaths];
-            mergedCatAttributes.sort();
+            const categoryType = gqlSchema.data.__schema.types.find(type => type.name === "CategoryInterface");
+            if (categoryType && categoryType.fields) {
+                const catFields = categoryType.fields;
+                const catPaths = [];
+                this.extractAllPaths(catFields, gqlSchema, catPaths);
+                
+                const catAttributeCodes = this.extractAttributeCodes(catFields, gqlSchema);
+                const mergedCatAttributes = [...catAttributeCodes, ...catPaths];
+                mergedCatAttributes.sort();
 
-            inputObj['categories'] = this.createNestedObject(mergedCatAttributes);
+                inputObj['categories'] = this.createNestedObject(mergedCatAttributes);
+            } else {
+                console.warn('CategoryInterface type not found in GraphQL schema');
+            }
         }
 
         const convertedObj = this.convertPriceObjects(inputObj);
@@ -671,11 +665,16 @@ class FeedForm extends React.Component {
         console.log('Fetching schema from server');
         const headers = this.getHeaders();
         const schema = await invokeAction('feed-generator/getGqlSchema', headers, {}, this.props);
-        console.log("Schema response: " + schema);
 
-        const compressed = buffer.from(schema, 'base64');
-        const decompressed = zlib.inflateRawSync(compressed);
-        const decompressedString = decompressed.toString();
+        // Decode base64 to Uint8Array
+        const binaryString = atob(schema);
+        const compressed = new Uint8Array(binaryString.length);
+        for (let i = 0; i < binaryString.length; i++) {
+            compressed[i] = binaryString.charCodeAt(i);
+        }
+        // Decompress using pako
+        const decompressed = pako.inflateRaw(compressed);
+        const decompressedString = new TextDecoder().decode(decompressed);
 
         sessionStorage.setItem(cacheKey, decompressedString);
 
@@ -700,7 +699,6 @@ class FeedForm extends React.Component {
         const config = await invokeAction('feed-generator/getConfig', headers, {}, this.props);
         
         sessionStorage.setItem(cacheKey, JSON.stringify(config));
-        console.log("Config response: " + JSON.stringify(config));
 
         return config
     }
@@ -712,22 +710,28 @@ class FeedForm extends React.Component {
         fields.forEach(field => {
             if (field.type.kind === 'OBJECT' && !field.isDeprecated) {
                 const typeName = field.type.name;
-                const subTypeFields = gqlSchema.data.__schema.types.find(type => type.name === typeName).fields;
-                subFields[field.name] = subTypeFields;
-                this.extractSubFields(subTypeFields, gqlSchema, subFields, `${prefix}${field.name}.`);
+                const subType = gqlSchema.data.__schema.types.find(type => type.name === typeName);
+                if (subType && subType.fields) {
+                    subFields[field.name] = subType.fields;
+                    this.extractSubFields(subType.fields, gqlSchema, subFields, `${prefix}${field.name}.`);
+                }
             } else if (field.type.kind === 'LIST') { 
-                if (field.type.ofType.kind === 'OBJECT') {
-                        const ofTypeName = field.type.ofType.name;
-                        const subTypeFields = gqlSchema.data.__schema.types.find(type => type.name === ofTypeName).fields;
-                        subFields[field.name] = subTypeFields;
-                        this.extractSubFields(subTypeFields, gqlSchema, subFields, `${prefix}${field.name}.`);
+                if (field.type.ofType && field.type.ofType.kind === 'OBJECT') {
+                    const ofTypeName = field.type.ofType.name;
+                    const subType = gqlSchema.data.__schema.types.find(type => type.name === ofTypeName);
+                    if (subType && subType.fields) {
+                        subFields[field.name] = subType.fields;
+                        this.extractSubFields(subType.fields, gqlSchema, subFields, `${prefix}${field.name}.`);
+                    }
                 }
             } else if (field.type.kind === 'NON_NULL') {
-                if (field.type.ofType.kind === 'OBJECT') {
+                if (field.type.ofType && field.type.ofType.kind === 'OBJECT') {
                     const ofTypeName = field.type.ofType.name;
-                    const subTypeFields = gqlSchema.data.__schema.types.find(type => type.name === ofTypeName).fields;
-                    subFields[field.name] = subTypeFields;
-                    this.extractSubFields(subTypeFields, gqlSchema, subFields, `${prefix}${field.name}.`);
+                    const subType = gqlSchema.data.__schema.types.find(type => type.name === ofTypeName);
+                    if (subType && subType.fields) {
+                        subFields[field.name] = subType.fields;
+                        this.extractSubFields(subType.fields, gqlSchema, subFields, `${prefix}${field.name}.`);
+                    }
                 }
             } 
         });
@@ -846,11 +850,9 @@ class FeedForm extends React.Component {
     }
 
     deleteFeedFromDialog = () => {
-        console.log('feed delete from action');
         this.deleteFeedByUuid(this.props.feedUuid);
     }
     regenerateFeedHandle = () => {
-        console.log('feed regenerate from action');
         this.regenerateFeedByUuid(this.props.feedUuid);
     }
 

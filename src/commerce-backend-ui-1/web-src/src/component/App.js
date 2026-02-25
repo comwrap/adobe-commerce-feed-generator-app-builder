@@ -15,8 +15,12 @@ import {
     Image,
     Heading,
     Item,
-    Flex
+    Flex,
+    ProgressCircle
 } from '@adobe/react-spectrum'
+import { attach } from '@adobe/uix-guest'
+import { HashRouter, Routes, Route } from 'react-router-dom'
+import ExtensionRegistration from './ExtensionRegistration'
 
 import logo from 'url:../../media/logo.png'
 
@@ -29,22 +33,35 @@ import Docs from './Docs'
 import SettingsContainer from './Settings/Container'
 import FeedForm from "./FeedForm";
 
-function App(props) {
-
-    // use exc runtime event handlers
-    // respond to configuration change events (e.g. user switches org)
-    props.runtime.on('configuration', ({imsOrg, imsToken, locale}) => {
-        console.log('configuration change', {imsOrg, imsToken, locale})
-    })
-    // respond to history change events
-    props.runtime.on('history', ({type, path}) => {
-        console.log('history change', {type, path})
-    })
+// Main page content component
+function MainPage(props) {
 
     const [isOpen, setOpen] = React.useState(false);
     const [feedFormKey, setFeedFormKey] = React.useState(0);
     const [contentKey, setContentKey] = React.useState(0);
     const [tab, setTab] = React.useState('home');
+    const [imsState, setImsState] = React.useState(props.ims);
+    const [isTokenReady, setIsTokenReady] = React.useState(!!props.ims.token);
+
+    // Get token from UIX guest context once at startup if not available
+    React.useEffect(() => {
+        async function initToken() {
+            if (!imsState.token) {
+                try {
+                    const guestConnection = await attach({ id: 'feedGenerator' });
+                    const token = guestConnection?.sharedContext?.get('imsToken');
+                    const org = guestConnection?.sharedContext?.get('imsOrgId');
+                    if (token) {
+                        setImsState({ ...imsState, token, org });
+                    }
+                } catch (e) {
+                    console.error('App: Failed to get token from UIX guest context');
+                }
+            }
+            setIsTokenReady(true);
+        }
+        initToken();
+    }, []);
 
     const reloadFeedTable = () => {
         setContentKey(contentKey + 1);
@@ -57,6 +74,20 @@ function App(props) {
 
     const changeTab = (tabKey) => {
         setTab(tabKey)
+    }
+
+    // Show loading while waiting for token
+    if (!isTokenReady) {
+        return (
+            <Provider theme={defaultTheme} colorScheme="light">
+                <View padding="size-1000">
+                    <Flex direction="column" alignItems="center" justifyContent="center" gap="size-200">
+                        <ProgressCircle aria-label="Loading..." isIndeterminate size="L" />
+                        <Heading level={4}>Loading Feed Generator...</Heading>
+                    </Flex>
+                </View>
+            </Provider>
+        );
     }
 
     return (
@@ -83,27 +114,16 @@ function App(props) {
 
                             <View gridArea="header-nav" width="size-5000" height="size-400">
                                 <Flex direction="row"  gap="size-100" justifyContent="center">
-                                    {/*<Router>*/}
-                                    {/*    <Link to="/">Home</Link>*/}
-                                    {/*    <Link to="/feeds">Feeds</Link>*/}
-                                    {/*    <Link to="/about">About</Link>*/}
                                         <TabList>
                                             <Item key="home">Home</Item>
                                             <Item key="feeds">Feeds</Item>
                                             <Item key="docs">Docs</Item>
                                         </TabList>
-                                    {/*<Routes>*/}
-                                    {/*    /!*<Route exact path="/"><Home/></Route>*!/*/}
-                                    {/*    <Route path="/feeds" element={<Feeds />}></Route>*/}
-                                    {/*    <Route path="/about" element={<About />}></Route>*/}
-                                    {/*</Routes>*/}
-                                    {/*</Router>*/}
                                 </Flex>
                             </View>
 
                             <View gridArea="header-button" width="size-5000" height="size-400">
                                 <Flex direction="row" justifyContent="right">
-                                    {/*<Button variant="accent">Create New Feed</Button>*/}
 
                                     <Button variant="accent" onPress={handleCreateFeedClick}>
                                         Create new feed
@@ -113,11 +133,11 @@ function App(props) {
                                         reloadFeedsTable={reloadFeedTable}
                                         isOpen={isOpen}
                                         setDialog={setOpen}
-                                        ims={props.ims}
+                                        ims={imsState}
                                         runtime={props.runtime}/>
                                     <View marginStart="size-250">
                                         <SettingsContainer
-                                            ims={props.ims}
+                                            ims={imsState}
                                             runtime={props.runtime}/>
                                     </View>
                                 </Flex>
@@ -128,11 +148,10 @@ function App(props) {
 
                 <View gridArea="content" paddingX="size-250" paddingY="size-100">
                     <Content key={contentKey}>
-                        <TabPanels>
-                            <Item key="home"><Home ims={props.ims} runtime={props.runtime} changeTab={changeTab}/></Item>
-                            <Item key="feeds"><Feeds ims={props.ims} runtime={props.runtime}/></Item>
-                            <Item key="docs"><Docs/></Item>
-                        </TabPanels>
+                        {/* Lazy load tabs - only mount selected tab to avoid duplicate API calls */}
+                        {tab === 'home' && <Home ims={imsState} runtime={props.runtime} changeTab={changeTab}/>}
+                        {tab === 'feeds' && <Feeds ims={imsState} runtime={props.runtime}/>}
+                        {tab === 'docs' && <Docs/>}
                     </Content>
                 </View>
 
@@ -147,8 +166,21 @@ function App(props) {
     )
 }
 
-App.propTypes = {
-    ims: PropTypes.object
+MainPage.propTypes = {
+    ims: PropTypes.object,
+    runtime: PropTypes.object
 };
 
+// App routing wrapper - routes to ExtensionRegistration per Admin UI SDK requirements
+function App(props) {
+    return (
+        <HashRouter>
+            <Routes>
+                <Route index element={<ExtensionRegistration runtime={props.runtime} ims={props.ims} />} />
+            </Routes>
+        </HashRouter>
+    )
+}
+
+export { MainPage }
 export default App

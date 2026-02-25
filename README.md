@@ -4,15 +4,20 @@ Feed Generator is a service that simplifies the process of generating product fe
 
 ## Installation
 
-Module compartible with both Adobe Commerce SaaS and PaaS.
+Module compatible with both Adobe Commerce SaaS and PaaS.
 
 Please see [INSTALL.md](INSTALL.md) for more details.
+
+> [!IMPORTANT]
+> This application is designed to run within the Adobe Experience Cloud Shell or Adobe Commerce Admin UI. 
+> Viewing the deployed application directly via its URL outside of these environments will result in the UI not loading correctly.
+> Always access the application through the Experience Cloud Shell or via the Adobe Commerce Admin panel.
 
 ## Home page / Grid
 
 On the application home page you will see list of the feeds:
 
-![Home page](./docs/images/a6b730f0-513e-4c80-ab0a-460cc80d4efd.png)
+![Home page](./docs/images/home-page.png)
 
 For each feed you can: 
 
@@ -42,7 +47,7 @@ If during feed generation an error occurs, you can see an error in the grid.
 
 On a Grid page you can click on a Feed name, and you will be landed on Edit page of selected feed: 
 
-![Edit Feed](./docs/images/c6960caf-13fb-4d76-a42b-e43d86b802bd.png)
+![Edit Feed](./docs/images/edit-feed.png)
 
 Here you can change the following elements: 
 
@@ -191,7 +196,7 @@ For that go to Settings and click on clean the cache button.
 
 #### Fixed Variables
 
-Header and Footer currently have a support to variables (Only 1 actualy)
+Header and Footer currently have a support to variables (Only 1 actually)
 
 `{{DATA}}` - Current Date/Time - will be in format 2024-10-21T14:45:30.123Z
 
@@ -199,14 +204,16 @@ Header and Footer currently have a support to variables (Only 1 actualy)
 
 Variables are defined using double curly braces (`{{ }}`) and correspond to fields in the Adobe Commerce GraphQL product output. For example, `{{sku}}` will be replaced with the product's SKU.
 
-##### Additonal parameters
+##### Additional parameterss
+
+Note: The examples in 'Additional parameters' show how to use the parameters. The tag names may be different in your API, as they are specific to your system.
 
 ###### Repeating Tags with `count`
 
 When a variable corresponds to an array, you can use the `count` property to repeat the XML tag for each element in the array. For instance, using `count=5` will generate up to 5 tags, each containing a different value from the array.
 
 ```xml
-<g:brand>{{manufacturer count="5"}}</g:brand>
+<image>{{media_gallery.url count="2"}}</image>
 ```
 
 ##### Selecting Specific Array Elements with `index`
@@ -217,7 +224,7 @@ To select a specific element from an array, use the `index` property. This will 
 <g:product_type>{{categories.name index="2"}}</g:product_type>
 ```
 
-##### Selecting Attribute with Specific code
+##### Selecting Attribute with Specific code (SaaS specific feature) 
 
 ```xml
 <color>{{attributes.value code='color'}}</color>
@@ -225,28 +232,51 @@ To select a specific element from an array, use the `index` property. This will 
 
 Add attributes.value is an Array of attributes, to get specific attribute, you can use "code" parameter and define attribute with which code you want to use.
 
+#### Example for Google Feed
 
-#### Example 
+##### Header
+```xml
+<?xml version="1.0"?>
+<rss xmlns:g="http://base.google.com/ns/1.0" version="2.0">
+<channel>
+```
+
+##### Body (PaaS)
 
 ```xml
 <item>
   <g:id>{{sku}}</g:id>
   <title>{{name}}</title>
   <description>{{description.html}}</description>
-  <link>https://www.native-instruments.com/{{detail_page}}</link>
+  <link>https://www.URL.com/{{url_key}}</link>
   <g:image_link>{{image.url}}</g:image_link>
   <g:condition>new</g:condition>
   <g:price>{{price_range.maximum_price.final_price.value}} {{price_range.maximum_price.final_price.currency}}</g:price>
-  <g:availability>In Stock</g:availability>
-  <g:google_product_category><![CDATA[Arts &amp; Entertainment &gt; Hobbies &amp; Creative Arts &gt; Musical Instruments &gt; Electronic Musical Instruments]]></g:google_product_category>
-  <g:identifier_exists>true</g:identifier_exists>
-  <g:product_type index=2>{{categories.name}}</g:product_type>
-  <g:sale_price>{{price_range.minimum_price.final_price.value}}</g:sale_price>
-  <g:brand count=5>{{manufacturer}}</g:brand>
+  <g:category index="2">{{categories.name}}</g:category>
   <g:mpn>{{sku}}</g:mpn>
   <g:additional_image_link><![CDATA[{{image.url}}?width=350&height=350&fit=crop]]></g:additional_image_link>
 </item>
 ```
+
+
+##### Body (SaaS)
+```xml
+<item>
+  <sku>{{sku}}</sku>
+  <description>{{description}}</description>
+  <image>{{images.url count="2"}}</image>
+  <color>{{attributes.value code='color'}}</color>
+  <weight>{{attributes.value code='weight'}}</weight>
+  <price>{{SimpleProductView||price.final.amount.value}} {{SimpleProductView||price.final.amount.currency}}</price>
+</item>
+```
+
+##### Footer
+```xml
+</channel>
+</rss>
+```
+
 
 ## Technical Module implementation
 
@@ -285,7 +315,7 @@ Regenerate Feed - will trigger the event “generate.feed” for a particular fe
 
 * `getAllStores` - get all Adobe Commerce Stores by API
 
-* `generateByCron` - trigger feed generation by OpenWisk alarms. 
+* `generateByCron` - trigger feed generation by OpenWhisk alarms. 
 
 * `getConfig` - receive public module configs. Currently only return type of authorization (ims vs oauth). 
 
@@ -306,8 +336,8 @@ Action is running every 30 minutes and checking by feed settings if it have to b
   Edit / Create New Feed form will contain form to save new Feed.
 
   Current elements: 
-  * Feed Format - select - JSON | XML
-  * Feed Item: Big text field to have XML | JSON there with feed item body
+  * Feed Format - select - XML
+  * Feed Item: Big text field to have XML there with feed item body
   * Feed Header
   * Feed Footer
   * Store View - select with list of available store views on Adobe Commerce (websites also have to be there, but it is not possible to select them)

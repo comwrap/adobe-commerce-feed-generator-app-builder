@@ -1,7 +1,3 @@
-/* 
-* <license header>
-*/
-
 /* This file exposes some common utilities for your actions */
 
 const { handlePlaceholder } = require('./utils/placeholderHandler');
@@ -277,8 +273,11 @@ function generateGqlItemsQueryBodyForTheFeed (feed) {
 function generateFeedBodyForProduct(items, feed, type) {
   let resultFeedBody = new Array();
 
+  // Filter out null items that may result from GraphQL partial errors
+  const validItems = items.filter(item => item !== null);
+
   const placeholders = [...feed.matchAll(/{{.*?}}/g)];
-  for (let item of items) {
+  for (let item of validItems) {
     let generatedFeed = (" " + feed).slice(1);
 
     for (let placeholder of placeholders) {

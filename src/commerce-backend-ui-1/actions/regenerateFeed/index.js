@@ -1,5 +1,9 @@
 const { Core, Events } = require('@adobe/aio-sdk')
 const uuid = require('uuid')
+
+const { getImsAccessToken } = require('@adobe/commerce-sdk-auth')
+const { fromParams } = require('../auth')
+
 const {
   CloudEvent
 } = require("cloudevents");
@@ -11,9 +15,6 @@ async function main (params) {
   const logger = Core.Logger('main', { level: params.LOG_LEVEL || 'info' })
 
   try {
-
-    console.log("called index.js")
- 
     params['payload'] = {"uuid": params.uuid}
 
     // check for missing request input parameters and headers
@@ -21,24 +22,30 @@ async function main (params) {
     const requiredHeaders = ['Authorization', 'x-gw-ims-org-id']
     const errorMessage = checkMissingRequestInputs(params, requiredParams, requiredHeaders)
     if (errorMessage) {
-      // return and log client errors
       return errorResponse(400, errorMessage, logger)
     }
 
     // extract the user Bearer token from the Authorization header
-    const token = getBearerToken(params)
+    let token = getBearerToken(params)
     
+    const authParams = fromParams(params, true)
+    if (authParams?.ims) {
+        const imsResponse = await getImsAccessToken(authParams.ims)
+        token = imsResponse.access_token
+        logger.info('Got IMS access token.')
+    } else {
+        logger.info('NOT using IMS auth - using Bearer token from header.')
+    }
+
     // initialize the client
     const orgId = params.__ow_headers['x-gw-ims-org-id']
-
-
     const eventsClient = await Events.init(orgId, params.apiKey, token)
 
-    // Create cloud event for the given payload
     const cloudEvent = createCloudEvent(params.providerId, params.eventCode, params.payload)
 
-    // Publish to I/O Events
+    logger.info('Publishing event...')
     const published = await eventsClient.publishEvent(cloudEvent)
+    
     let statusCode = 200
     if (published === 'OK') {
       logger.info('Published successfully to I/O Events')
@@ -55,8 +62,6 @@ async function main (params) {
     return response
 
   } catch (error) {
-    // log any server errors
-    logger.error(error)
     // return with 500
     return errorResponse(500, 'server error: ' + error, logger)
   }

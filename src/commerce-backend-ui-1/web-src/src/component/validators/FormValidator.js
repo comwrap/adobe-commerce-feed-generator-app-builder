@@ -65,15 +65,12 @@ function validateFeedForm(feedData)
  */
 function validateXml(xml)
 {
-    console.log("Validating XML:", xml);
     // Create a new DOMParser
     const parser = new DOMParser();
 
     try {
         // Remove all placeholders (anything between {{ and }}) before validation
         const xmlWithoutPlaceholders = xml.replace(/\{\{[^}]*\}\}/g, 'placeholder');
-        console.log("XML after removing placeholders:", xmlWithoutPlaceholders);
-        
         const xmlDoc = parser.parseFromString(xmlWithoutPlaceholders, "text/xml");
 
         // Check if there are any parsing errors

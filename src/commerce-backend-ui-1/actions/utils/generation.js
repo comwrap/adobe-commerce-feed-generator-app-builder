@@ -23,12 +23,15 @@ async function generateFeed(uuid, params) {
     // Cause it is not-possible to debug State libs, we need to find a workaround
     const isDebugMode = false;
 
+    // Initialize state outside try block so it's accessible in catch
+    const state = await stateLib.init()
+    let feedToExport = null
+
     try {
 
         var startTime = performance.now()
         const uuidToExport = uuid
         let feedsInformation = {}
-        const state = await stateLib.init()
 
         if (!isDebugMode) {
             feedsInformation = await state.get('feeds_' + uuidToExport) || null
@@ -42,21 +45,21 @@ async function generateFeed(uuid, params) {
                 "expiration": "2023-03-03T12:58:47.000Z",
                 "value": {
                     "created_at": "2023-03-02T12:58:47.770Z",
-                    "feedBody": "<item>\n  <g:id>{{sku}}</g:id>\n  <title>{{name}}</title>\n  <description>{{description}}</description>\n <g:image_link>{{images.url count='2'}}</g:image_link>\n <price>{{SimpleProductView||price.final.amount.value}} {{SimpleProductView||price.final.amount.currency}}</price>\n  <weight>{{attributes.value code='weight'}}</weight>\n </item>",
+                    "feedBody": "<item>\n  <g:id>{{sku}}</g:id>\n  <g:category index=\"2\">{{categories.name}}</g:category>\n  \n <g:image_link>{{image.url count='2'}}</g:image_link>\n </item>",
                     "feedFooter": "</items>",
                     "feedHeader": "<items>",
                     "feedName": "Test XML",
                     "feed_type": "xml",
                     "generated_at": "",
                     "status": "pending",
-                    "store_code": "default||main_website_store||base",
-                    "searchQuery": "basebal",
-                    "filterQuery": "{\n   \"attribute\": \"price\",\n   \"range\": {\n     \"from\": 10,\n     \"to\": 100\n   }\n}"
+                    "store_code": "de||main_website_store||base",
+                    "searchQuery": "Gum",
+//                    "filterQuery": "{\n   \"attribute\": \"price\",\n   \"range\": {\n     \"from\": 10,\n     \"to\": 100\n   }\n}"
                 }
             }
         }
 
-        const feedToExport = feedsInformation['value']
+        feedToExport = feedsInformation['value']
 
         feedToExport.status = "in progress"
         if (!isDebugMode) {
@@ -125,7 +128,17 @@ async function generateFeed(uuid, params) {
 
         let products = await queryProducts(graphqlQuery, params)
 
-        if (products.errors !== undefined) {
+        // Collect all warnings from GraphQL responses
+        let allWarnings = []
+
+        // Check for warnings (partial errors with data)
+        if (products.warnings !== undefined) {
+            allWarnings = [...allWarnings, ...products.warnings]
+            logger.info('GraphQL returned warnings on first page:', JSON.stringify(products.warnings))
+        }
+
+        if (products.errors !== undefined && products.data === undefined) {
+            // Complete failure - no data at all
             if (products.errors[0].message !== undefined) {
                 feedToExport.status = "error"
                 feedToExport.error = products.errors[0].message + "<br /> Request was: " + JSON.stringify(gqlQuery)
@@ -157,6 +170,12 @@ async function generateFeed(uuid, params) {
 
             graphqlQuery = jsonToGraphQLQuery.jsonToGraphQLQuery(gqlQuery, {pretty: false})
             products = await queryProducts(graphqlQuery, params)
+
+            // Collect warnings from pagination calls
+            if (products.warnings !== undefined) {
+                allWarnings = [...allWarnings, ...products.warnings]
+                logger.info('GraphQL returned warnings on page ' + j + ':', JSON.stringify(products.warnings))
+            }
 
             if (authParams.ims !== undefined && authParams.ims !== null) {
                 productItems = [...productItems, ...products.data.productSearch.items.map(item => item.productView)]
@@ -193,6 +212,14 @@ async function generateFeed(uuid, params) {
         feedToExport.generated_at = new Date()
         feedToExport.status = "generated"
         feedToExport.error = ""
+        feedToExport.warning = ""
+        
+        // Set warning if there were partial errors during generation
+        if (allWarnings.length > 0) {
+            const warningMessages = allWarnings.map(w => w.message + (w.path ? ' (path: ' + w.path.join('.') + ')' : '')).join('; ')
+            feedToExport.warning = warningMessages
+            logger.info('Feed generated with warnings:', warningMessages)
+        }
 
         if (!isDebugMode) {
             await state.put('feeds_' + uuidToExport, JSON.stringify(feedToExport), {ttl: stateLib.MAX_TTL})
@@ -208,6 +235,19 @@ async function generateFeed(uuid, params) {
     } catch (error) {
         // log any server errors
         logger.error(error)
+
+        // Save error status to the feed if it was loaded
+        if (feedToExport !== null) {
+            try {
+                feedToExport.status = "error"
+                feedToExport.error = error.message
+                feedToExport.warning = ""
+                await state.put('feeds_' + uuid, JSON.stringify(feedToExport), {ttl: stateLib.MAX_TTL})
+                logger.info('Feed status updated to error: ' + uuid)
+            } catch (stateError) {
+                logger.error('Failed to update feed status to error:', stateError)
+            }
+        }
 
         return new ActionResponse(505, error.message)
     }

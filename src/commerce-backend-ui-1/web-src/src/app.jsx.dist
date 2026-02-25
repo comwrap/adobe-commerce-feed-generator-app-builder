@@ -21,8 +21,6 @@ import { ExtensionRegistration } from "./component/ExtensionRegistration";
 /** The main component that renders the app. */
 function App(props) {
 
-console.log("App being called");
-
   const routes = [
     {
       path: "/",
