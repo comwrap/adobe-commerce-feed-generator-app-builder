@@ -19,6 +19,8 @@ import {
     ProgressCircle
 } from '@adobe/react-spectrum'
 import { attach } from '@adobe/uix-guest'
+import { HashRouter, Routes, Route } from 'react-router-dom'
+import ExtensionRegistration from './ExtensionRegistration'
 
 import logo from 'url:../../media/logo.png'
 
@@ -31,17 +33,8 @@ import Docs from './Docs'
 import SettingsContainer from './Settings/Container'
 import FeedForm from "./FeedForm";
 
-function App(props) {
-
-    // use exc runtime event handlers
-    // respond to configuration change events (e.g. user switches org)
-    props.runtime.on('configuration', ({imsOrg, imsToken, locale}) => {
-        console.log('configuration change', {imsOrg, imsToken, locale})
-    })
-    // respond to history change events
-    props.runtime.on('history', ({type, path}) => {
-        console.log('history change', {type, path})
-    })
+// Main page content component
+function MainPage(props) {
 
     const [isOpen, setOpen] = React.useState(false);
     const [feedFormKey, setFeedFormKey] = React.useState(0);
@@ -54,17 +47,15 @@ function App(props) {
     React.useEffect(() => {
         async function initToken() {
             if (!imsState.token) {
-                console.log('App: Token not available, fetching from UIX guest context...');
                 try {
                     const guestConnection = await attach({ id: 'feedGenerator' });
                     const token = guestConnection?.sharedContext?.get('imsToken');
                     const org = guestConnection?.sharedContext?.get('imsOrgId');
                     if (token) {
-                        console.log('App: Got token from UIX guest context');
                         setImsState({ ...imsState, token, org });
                     }
                 } catch (e) {
-                    console.error('App: Failed to get token from UIX guest context:', e);
+                    console.error('App: Failed to get token from UIX guest context');
                 }
             }
             setIsTokenReady(true);
@@ -175,8 +166,21 @@ function App(props) {
     )
 }
 
-App.propTypes = {
-    ims: PropTypes.object
+MainPage.propTypes = {
+    ims: PropTypes.object,
+    runtime: PropTypes.object
 };
 
+// App routing wrapper - routes to ExtensionRegistration per Admin UI SDK requirements
+function App(props) {
+    return (
+        <HashRouter>
+            <Routes>
+                <Route index element={<ExtensionRegistration runtime={props.runtime} ims={props.ims} />} />
+            </Routes>
+        </HashRouter>
+    )
+}
+
+export { MainPage }
 export default App

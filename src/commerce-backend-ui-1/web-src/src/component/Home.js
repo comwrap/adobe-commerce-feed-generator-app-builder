@@ -11,20 +11,6 @@ import RecentFeeds from './RecentFeeds'
 class Home extends React.Component {
     constructor(props) {
         super(props)
-
-        console.log('Home runtime object:', props.runtime)
-        console.log('Home ims object:', props.ims)
-
-        // use exc runtime event handlers
-        // respond to configuration change events (e.g. user switches org)
-        props.runtime.on('configuration', ({imsOrg, imsToken, locale}) => {
-            console.log('configuration change', {imsOrg, imsToken, locale})
-        })
-        // respond to history change events
-        props.runtime.on('history', ({type, path}) => {
-            console.log('history change', {type, path})
-        })
-
         this.state = {
             actionResponseError: null,
             actionInvokeInProgress: false,
@@ -46,7 +32,6 @@ class Home extends React.Component {
                 headers['x-gw-ims-org-id'] = this.props.ims.org
             }
             const actionResponse = await actionWebInvoke(actions['send-promo'], headers, {email})
-            console.log(`Response from send-promo:`, actionResponse)
         } catch (e) {
             // log and store any error message
             console.error(e)

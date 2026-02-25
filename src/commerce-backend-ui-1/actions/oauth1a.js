@@ -84,8 +84,6 @@ function createClient (options, authOptions, logger) {
         authHeaders = await getAuthorizationHeaders(requestData)
       }
 
-      logger.debug(JSON.stringify(authHeaders));
-      
       const headers = {
         ...customHeaders,
         ...authHeaders

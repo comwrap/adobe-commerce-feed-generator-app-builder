@@ -15,7 +15,6 @@ async function main (params) {
   const logger = Core.Logger('main', { level: params.LOG_LEVEL || 'info' })
 
   try {
-
     params['payload'] = {"uuid": params.uuid}
 
     // check for missing request input parameters and headers
@@ -23,8 +22,6 @@ async function main (params) {
     const requiredHeaders = ['Authorization', 'x-gw-ims-org-id']
     const errorMessage = checkMissingRequestInputs(params, requiredParams, requiredHeaders)
     if (errorMessage) {
-      // return and log client errors
-      logger.error('Missing required inputs:', errorMessage)
       return errorResponse(400, errorMessage, logger)
     }
 
@@ -35,9 +32,9 @@ async function main (params) {
     if (authParams?.ims) {
         const imsResponse = await getImsAccessToken(authParams.ims)
         token = imsResponse.access_token
-        logger.info('Got IMS access token')
+        logger.info('Got IMS access token.')
     } else {
-        logger.info('NOT using IMS auth - using Bearer token from header')
+        logger.info('NOT using IMS auth - using Bearer token from header.')
     }
 
     // initialize the client
@@ -46,6 +43,7 @@ async function main (params) {
 
     const cloudEvent = createCloudEvent(params.providerId, params.eventCode, params.payload)
 
+    logger.info('Publishing event...')
     const published = await eventsClient.publishEvent(cloudEvent)
     
     let statusCode = 200

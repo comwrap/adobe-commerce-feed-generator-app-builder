@@ -34,19 +34,15 @@ class FeedActionMenuDialog extends Component {
     }
 
     onDeleteFeedAction = () => {
-        console.log('feed removing')
         const self = this;
         this.deleteFeed().then(response => {
             ToastQueue.neutral('Feed deleted.', {timeout: 5000});
-            console.log('feed removed')
             this.reloadFeedsTable();
         }).catch(err => {
             ToastQueue.negative("Can't delete feed.", {timeout: 5000})
-            console.error('Error:', err)
         }).finally(() => {
 
         });
-        console.log('feed removing end')
     }
 
     async deleteFeed() {
@@ -61,7 +57,6 @@ class FeedActionMenuDialog extends Component {
 
         try {
             const deleteFeedResponse = await invokeAction('feed-generator/deleteFeed', headersData, params, this.props)
-            console.log(`Delete feed response:`, deleteFeedResponse)
             return;
         } catch (e) {
             console.error(e)

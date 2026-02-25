@@ -9,7 +9,6 @@ export function onUpdate(onChange: OnChange) {
             const doc = viewUpdate.state.doc;
             const value = doc.toString();
             onChange(value, viewUpdate);
-            console.log('editor view update listener fired');
         }
     });
 }

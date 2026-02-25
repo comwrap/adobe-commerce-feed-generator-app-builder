@@ -17,7 +17,7 @@ Please see [INSTALL.md](INSTALL.md) for more details.
 
 On the application home page you will see list of the feeds:
 
-![Home page](./docs/images/a6b730f0-513e-4c80-ab0a-460cc80d4efd.png)
+![Home page](./docs/images/home-page.png)
 
 For each feed you can: 
 
@@ -47,7 +47,7 @@ If during feed generation an error occurs, you can see an error in the grid.
 
 On a Grid page you can click on a Feed name, and you will be landed on Edit page of selected feed: 
 
-![Edit Feed](./docs/images/c6960caf-13fb-4d76-a42b-e43d86b802bd.png)
+![Edit Feed](./docs/images/edit-feed.png)
 
 Here you can change the following elements: 
 

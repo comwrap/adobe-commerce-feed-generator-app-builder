@@ -22,7 +22,7 @@ runtimeManifest:
       license: Apache-2.0
       inputs:
         LOG_LEVEL: debug
-        apiKey: $SERVICE_API_KEY
+        apiKey: $OAUTH_CLIENT_ID
         AC_GRAPHQL_URL: $AC_GRAPHQL_URL
         store: $AC_DEFAULT_STORE_CODE
         OAUTH_ORG_ID: $OAUTH_ORG_ID

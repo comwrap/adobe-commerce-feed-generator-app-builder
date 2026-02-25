@@ -101,7 +101,11 @@ OAUTH_SCOPES=AdobeID, openid, read_organizations, additional_info.projectedProdu
 7. Create Event Provider for Feed Generator. Run `aio event provider create` and define name. Copy `id` from output.
 Add to `.env` line `FEED_GENERATOR_PROVIDER_ID=<id>`
 
-8. Create Event Metadata for Feed Generator. Run `aio event eventmetadata create PROVIDERID`. Define event code as `feed.generate` and define description as `Generate Feed`.
+8. Create Event Metadata for Feed Generator. Run:
+   ```bash
+   aio event eventmetadata create <FEED_GENERATOR_PROVIDER_ID>
+   ```
+   Replace `<FEED_GENERATOR_PROVIDER_ID>` with the `id` generated in the previous step. Define event code as `feed.generate` and define description as `Generate Feed`.
 
 9. Run `aio app deploy` to deploy the app.
 
@@ -111,7 +115,7 @@ Add to `.env` line `FEED_GENERATOR_PROVIDER_ID=<id>`
 
 ## Adding to Adobe Admin UI (SaaS)
 
-For Adobe Commerce SaaS, you can add the module to be available in your Commerce Admin.
+For Adobe Commerce SaaS, follow the steps below to add the deployed application to the Commerce Admin
 
 1. Go to Stores -> Configuration in your Adobe Commerce Admin
 2. Go to Adobe Services -> Admin UI SDK

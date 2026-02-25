@@ -96,14 +96,10 @@ class FeedForm extends React.Component {
         const self = this;
         let isNew = true;
 
-         if (!this.props.ims.token) {
-            console.log('No IMS token found, attaching to guest connection. FeedForm.js. componentDidMount ...')
+         if (!this.props.ims.token) {            console.log('No IMS token found, attaching to guest connection. FeedForm.js. componentDidMount ...')
             const guestConnection = await attach({ id: 'feedGenerator' });
-            console.log('Guest connection established FeedForm.js:', guestConnection);
             this.props.ims.token = guestConnection?.sharedContext?.get('imsToken');
-            console.log('IMS token FeedForm.js:', this.props.ims.token);
             this.props.ims.org = guestConnection?.sharedContext?.get('imsOrgId');
-            console.log('IMS org FeedForm.js:', this.props.ims.org);
         }
 
         //load data for existing feed
@@ -125,7 +121,7 @@ class FeedForm extends React.Component {
         }
 
         this.fetchData(isNew).then(response => {
-            console.log('form data loaded')
+            console.log('Form data loaded successfully')
         }).catch(err => {
             console.error('Error:', err)
         }).finally(() => {
@@ -166,7 +162,6 @@ class FeedForm extends React.Component {
 
             currentTime.setMinutes(currentTime.getMinutes() + intervalMinutes);
         }
-        // console.log(options)
         return options;
     }
 
@@ -178,8 +173,6 @@ class FeedForm extends React.Component {
         let stores, listObject, feed; // Declare variables outside the blocks
 
         if (isNew === true) {
-            console.log('fetch data for "New feed"');
-
             if (config.ims !== true){
                 [stores, listObject] = await Promise.all([
                     this.getStores(),
@@ -196,8 +189,6 @@ class FeedForm extends React.Component {
             });
             return [stores, listObject];
         }
-
-        console.log('fetch data for "Existing feed"');
 
         if (config.ims !== true){
             [stores, listObject, feed] = await Promise.all([
@@ -227,7 +218,6 @@ class FeedForm extends React.Component {
         if (this.props.ims.org && !headersData['x-gw-ims-org-id']) {
             headersData['x-gw-ims-org-id'] = this.props.ims.org
         }
-        // console.log("getHeaders:", headersData);
         return headersData;
     }
 
@@ -337,7 +327,7 @@ class FeedForm extends React.Component {
             });
 
             await invokeAction('feed-generator/regenerateFeed', headers, params, this.props).then(response => {
-                console.log('feed regeneration started')
+                console.log('Feed regeneration started successfully')
                 ToastQueue.positive("Feed regeneration scheduled.", {timeout: 5000})
             }).catch(err => {
                 ToastQueue.negative("Can't schedule feed regeneration.", {timeout: 5000})
@@ -363,8 +353,6 @@ class FeedForm extends React.Component {
         try {
 
             const websitesToStoreViewsList = await invokeAction('feed-generator/getAllStores', headers, params, this.props)
-            console.log(`All stores action response:`, websitesToStoreViewsList)
-
             if (websitesToStoreViewsList[0]?.items[0]?.code === undefined) {
                 ToastQueue.negative("Cannot receive list of Commerce Stores, check your API", {timeout: 5000})
                 this.setState({storeListOptions: [], actionResponseError: "Cannot receive list of Commerce Stores, check your API", actionInvokeInProgress: false})
@@ -390,10 +378,7 @@ class FeedForm extends React.Component {
                     children: storesChildren
                 });
             }
-            console.log(`stores data:`, storesData);
-            console.log(`storesFlat data:`, storesFlat);
             this.setState({storeListOptions: storesData, storeListFlat: storesFlat});
-            console.log(`storesFlat state data:`, this.state.storeListFlat);
 
             return storesData
         } catch (e) {
@@ -523,7 +508,6 @@ class FeedForm extends React.Component {
     async getSubTypesForObject(name, withCategories = true, autocompletionList = []) {
 
         const gqlSchema = await this.getGqlSchemaData();
-        console.log("GQL schema:", gqlSchema);
 
         const config = await this.getApplicationConfig();
 
@@ -556,9 +540,7 @@ class FeedForm extends React.Component {
                 const typeName = possibleType.name;
                 const typeDefinition = gqlSchema.data.__schema.types.find(type => type.name === typeName);
                 
-                if (typeDefinition && typeDefinition.fields) {
-                    console.log(`Processing possible type: ${typeName}`);
-                    
+                if (typeDefinition && typeDefinition.fields) {                    
                     // Extract all paths for this type
                     const typePaths = [];
                     this.extractAllPaths(typeDefinition.fields, gqlSchema, typePaths);
@@ -683,7 +665,6 @@ class FeedForm extends React.Component {
         console.log('Fetching schema from server');
         const headers = this.getHeaders();
         const schema = await invokeAction('feed-generator/getGqlSchema', headers, {}, this.props);
-        console.log("Schema response: " + schema);
 
         // Decode base64 to Uint8Array
         const binaryString = atob(schema);
@@ -718,7 +699,6 @@ class FeedForm extends React.Component {
         const config = await invokeAction('feed-generator/getConfig', headers, {}, this.props);
         
         sessionStorage.setItem(cacheKey, JSON.stringify(config));
-        console.log("Config response: " + JSON.stringify(config));
 
         return config
     }
@@ -870,11 +850,9 @@ class FeedForm extends React.Component {
     }
 
     deleteFeedFromDialog = () => {
-        console.log('feed delete from action');
         this.deleteFeedByUuid(this.props.feedUuid);
     }
     regenerateFeedHandle = () => {
-        console.log('feed regenerate from action');
         this.regenerateFeedByUuid(this.props.feedUuid);
     }
 

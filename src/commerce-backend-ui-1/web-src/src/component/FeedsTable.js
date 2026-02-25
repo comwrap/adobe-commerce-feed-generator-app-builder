@@ -59,8 +59,6 @@ class FeedsTable extends React.Component {
         }
         try {
             const actionResponse = await invokeAction('feed-generator/getAllFeeds', headers, params, this.props)
-            console.log(`Recent feed action response:`, actionResponse)
-
             const feedRows = [];
             let i = 1;
             Object.keys(actionResponse).forEach(uuid => {
@@ -177,8 +175,6 @@ class FeedsTable extends React.Component {
             {name: 'STATUS', uid: 'status', width: 200},
             {name: '', uid: 'action', width: 50}
         ];
-        console.log(`feeds object:`, this.state.feeds);
-
         const renderCell = (item, fieldName) => {
             const feedActionMenuDialogRef = React.createRef();
             this.state.dialogRefs[item['uuid']] = feedActionMenuDialogRef;

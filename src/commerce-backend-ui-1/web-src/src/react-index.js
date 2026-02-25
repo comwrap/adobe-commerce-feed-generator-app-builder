@@ -5,7 +5,7 @@ import ReactDOMClient from "react-dom/client"
 // import ReactDOM from 'react-dom'
 // import { Provider, defaultTheme, Button } from "@adobe/react-spectrum"
 
-import ExtensionRegistration from './component/ExtensionRegistration'
+import App from './component/App'
 
 /* Here you can bootstrap your application and configure the integration with the Adobe Experience Cloud Shell */
 try {
@@ -27,7 +27,7 @@ function bootstrapRaw () {
     const root = ReactDOMClient.createRoot(document.getElementById("root"));
     root.render(
         <React.StrictMode>
-            <ExtensionRegistration runtime={mockRuntime} ims={mockIms} />
+            <App runtime={mockRuntime} ims={mockIms} />
         </React.StrictMode>
     );
 }
@@ -40,7 +40,6 @@ function bootstrapInExcShell () {
     runtime.on('ready', ({ imsOrg, imsToken, imsProfile, locale }) => {
         // tell the exc-runtime object we are done
         runtime.done()
-        console.log('Ready! received imsProfile:', imsProfile)
         const ims = {
             profile: imsProfile,
             org: imsOrg,
@@ -49,7 +48,7 @@ function bootstrapInExcShell () {
 
         const root = ReactDOMClient.createRoot(document.getElementById("root"));
         root.render(
-            <ExtensionRegistration runtime={runtime} ims={ims} />
+            <App runtime={runtime} ims={ims} />
         );
     })
 
